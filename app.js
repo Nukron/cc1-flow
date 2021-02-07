@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-var favicon = require('serve-favicon')
-var path = require('path')
+var favicon = require('serve-favicon');
+var path = require('path');
 
 const port = process.env.PORT || 3220
 //FIXME: Export Data to an external json file.
@@ -14,6 +14,7 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
     .then(() => console.log('Connection established to', dbURI))
     .catch(err => console.error('Unable to connect to the mongoDB server. Error:', err.message));
 
-
 app.use(express.static('public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use('/', require('./server/routes/index'));
+app.use('/event', require('./server/routes/events'));

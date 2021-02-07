@@ -1,11 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
-var favicon = require('serve-favicon');
-var path = require('path');
+const favicon = require('serve-favicon');
+const path = require('path');
+const fs = require('fs');
+
+const secret_data = fs.readFileSync('secret.json');
+let secret = JSON.parse(secret_data);
 
 const port = process.env.PORT || 3220
-//FIXME: Export Data to an external json file.
-const dbURI = "mongodb+srv://seb:2kdstcwct6qp9PnZ@milkyway0192e32.goedm.mongodb.net/Flow?retryWrites=true&w=majority";
+const dbURI = `mongodb+srv://${secret.login.user}:${secret.login.psw}@${secret.database.url}/Flow?retryWrites=true&w=majority`;
 
 const app = express();
 app.listen(port, () => { console.log(`Server started, and listening on port ${port}`); });

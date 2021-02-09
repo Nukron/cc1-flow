@@ -2,7 +2,13 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const EventSchema = new Schema({
-    //TODO: Implement a Schema for an Event
+    id: String,
+    degree: Number,
+    content: String,
+    veto_count: Number,
+    source_events: Array,
+    author: String,
+    plotline: String
 });
 
 EventSchema.statics.deleteRelatedEvents = async function()

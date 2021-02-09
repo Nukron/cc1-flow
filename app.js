@@ -7,7 +7,7 @@ const fs = require('fs');
 const secret_data = fs.readFileSync('secret.json');
 let secret = JSON.parse(secret_data);
 
-const port = process.env.PORT || 3220
+const port = process.env.PORT || 3220;
 const dbURI = `mongodb+srv://${secret.login.user}:${secret.login.psw}@${secret.database.url}/Flow?retryWrites=true&w=majority`;
 
 const app = express();

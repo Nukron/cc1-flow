@@ -2,7 +2,12 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const SessionSchema = new Schema({
-    //TODO: Implement a Session Schema
+    id: String,
+    name: String, 
+    root_event: String,
+    events: Array, 
+    players: Array,
+    turn:  Number
 });
 
 SessionSchema.statics.loadSession = async () => {

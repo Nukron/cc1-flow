@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
 
     try
     {
-        //TODO: Implement load events & render/serve Webpage?
+        res.sendFile("index.html");
     }
     catch (err)
     {
@@ -16,5 +16,11 @@ router.get('/', async (req, res) => {
         res.render('index', {errors: [{text: 'Couldn\'t load a story, sorry.'}]});
     }
 });
+
+function resetSession () {
+    Session.loadMainSession().then(s => {
+        Session.updateOne(s, {events: [], root_event: null}, (err, res) => { if(err) console.log(err); console.log(res) });
+    })
+}
 
 module.exports = router;

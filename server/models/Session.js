@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Event = require('./Event');
 
 const SessionSchema = new Schema({
     name: String, 
@@ -10,7 +9,7 @@ const SessionSchema = new Schema({
     turn:  Number
 });
 
-SessionSchema.statics.loadOnlySession = async function() {
+SessionSchema.statics.loadMainSession = async function() {
     const session = await this.findOne();
     if (session){
         return session;
@@ -32,7 +31,7 @@ SessionSchema.statics.getEvents = async function(session) {
 
 const Session = mongoose.model('Session', SessionSchema);
 
-const createMainSession = async function() {
+async function createMainSession() {
     const new_session = new Session({
         name: "main",
         root_event: null,

@@ -2,27 +2,34 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const EventSchema = new Schema({
-    id: String,
     degree: Number,
     content: String,
     veto_count: Number,
     source_events: Array,
     author: String,
     plotline: String,
-    creation_date: Date,
-    creation_time: Number //(seconds)
+    creation_date: Date
 });
 
-
-EventSchema.statics.createEvent = async function(new_event) {
+EventSchema.statics.increaseVeto = async function() {
     
 }
 
-EventSchema.statics.increaseVeto = async function() {
-
+EventSchema.statics.createEvent = function(event) {
+    return createEvent(event);
 }
 
-EventSchema.statics.deleteEvent = async function() {
+EventSchema.statics.createTestEvent = function(){
+    return createEvent({
+        degree: 1,
+        content: "One day the sun stopped rising",
+        source_events: [],
+        author: 'anonymous',
+        plotline: 'main',
+    })
+}
+
+EventSchema.statics.deleteEvent = async function(id) {
     try {
 
     }
@@ -31,7 +38,7 @@ EventSchema.statics.deleteEvent = async function() {
     }
 }
 
-EventSchema.statics.deleteRelatedEvents = async function()
+EventSchema.statics.deleteRelatedEvents = async function(id, events)
 {
     try
     {
@@ -43,4 +50,18 @@ EventSchema.statics.deleteRelatedEvents = async function()
     }
 };
 
-module.exports = mongoose.model('Event', EventSchema);
+const Event = mongoose.model('Event', EventSchema);
+
+const createEvent = function(event){
+    return new Event({
+        degree: event.degree,
+        content: event.content,
+        veto_count: 0,
+        source_events: event.source_events,
+        author: event.author,
+        plotline: event.plotline,
+        creation_date: Date.now()
+    })
+}
+
+module.exports = Event;

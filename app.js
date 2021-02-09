@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const favicon = require('serve-favicon');
 const path = require('path');
 const fs = require('fs');
+const Session = require("./server/models/Session");
 
 const secret_data = fs.readFileSync('secret.json');
 let secret = JSON.parse(secret_data);

@@ -8,8 +8,28 @@ const EventSchema = new Schema({
     veto_count: Number,
     source_events: Array,
     author: String,
-    plotline: String
+    plotline: String,
+    creation_date: Date,
+    creation_time: Number //(seconds)
 });
+
+
+EventSchema.statics.createEvent = async function(new_event) {
+    
+}
+
+EventSchema.statics.increaseVeto = async function() {
+
+}
+
+EventSchema.statics.deleteEvent = async function() {
+    try {
+
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
 
 EventSchema.statics.deleteRelatedEvents = async function()
 {

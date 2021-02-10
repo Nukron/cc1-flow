@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const Event = require('./Event');
 
 const SessionSchema = new Schema({
     name: String, 
@@ -15,19 +16,20 @@ SessionSchema.statics.loadMainSession = async function() {
         return session;
     } else {
         createMainSession();
+        const new_session = await this.findOne();
+        return new_session;
     }
 }
 
-SessionSchema.statics.getEvents = async function(session) {
-    if (session.events.length > 0) {
-        const events = await session.events.map(e_id => Event.findById(e_id))
-        return events; 
-        //return Promise.all()
+SessionSchema.method("getEvents", async function() {
+    if (this.events.length > 0) {
+        const events = await Promise.all(this.events.map(e_id => Event.findById(e_id)));
+        return events
     } else {
         console.log("No events yet in this session");
         return null;
     }
-}
+})
 
 const Session = mongoose.model('Session', SessionSchema);
 

@@ -25,5 +25,8 @@ app.use('/', require('./server/routes/index'));
 app.use('/events', require('./server/routes/events'));
 app.use(express.json());
 
-
+(async () => { 
+    const session = await Session.loadMainSession();
+    const events = await session.getEvents();
+    console.log(events);})()
 

@@ -7,8 +7,8 @@ const Session = require('../models/Session');
 router.get('/', async (req, res) => {
     try {
        const session = await Session.loadMainSession();
-       const events = await Session.getEvents(session);
-       res.send("Test!");
+       const events = await session.getEvents();
+       res.send(events);
     }
 
     catch {

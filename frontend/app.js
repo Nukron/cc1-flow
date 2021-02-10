@@ -9,9 +9,13 @@ class FlowSessionFrame extends React.Component {
         super(props);
     }
 
-    changePoints(v){
-        this.setState((state) => ({points: (state.points + v) >= 0 && (state.points + v) <= 4 ? state.points + v : state.points}));
-    }
+    componentDidMount() {
+        axios.get(`http://localhost:3220/events`)
+          .then(res => {
+            const events = res.data;
+            console.log(events);
+          })
+      }
 
     render(){
         return (

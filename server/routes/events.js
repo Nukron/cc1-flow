@@ -32,13 +32,14 @@ router.post('/add', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         const id = req.params.id;
-        Session.removeEvent(id);
+        const session = await Session.loadMainSession();
+        session.removeEventsDeep(id);
         console.log(`DELETE: Event ${id} deleted!`);
-        res.send("SERVER: Successfully removed Event!")
+        res.send("SERVER: Successfully removed Event and related events!")
     }
 
-    catch {
-        console.log("Could not add event")
+    catch(err) {
+        console.log("Could not delete event: ", err.message);
     }
 });
 
@@ -61,6 +62,8 @@ router.post('/veto/:id', async (req, res) => {
         console.log("Could not vote against event")
     }
 })
+
+//TODO: Refactor and make it a session method
 
 async function newEvent (event) {
     Session.loadMainSession().then(s => {

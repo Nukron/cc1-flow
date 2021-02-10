@@ -3,8 +3,6 @@ const mongoose = require("mongoose");
 const favicon = require('serve-favicon');
 const path = require('path');
 const fs = require('fs');
-const Session = require('./server/models/Session');
-const Event = require("./server/models/Event");
 
 const secret_data = fs.readFileSync('secret.json');
 let secret = JSON.parse(secret_data);
@@ -21,12 +19,9 @@ mongoose.connect(dbURI, {useNewUrlParser: true, useUnifiedTopology: true})
 
 app.use(express.static('public'));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use('/', require('./server/routes/index'));
-app.use('/events', require('./server/routes/events'));
 app.use(express.json());
 
-(async () => { 
-    const session = await Session.loadMainSession();
-    const events = await session.getEvents();
-    console.log(events);})()
+// --- ROUTES ---- //
+app.use('/', require('./server/routes/index'));
+app.use('/events', require('./server/routes/events'));
 

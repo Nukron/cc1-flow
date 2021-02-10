@@ -13,13 +13,15 @@ router.get('/', async (req, res) => {
 
     catch {
 
-    
     }
 })
 
 router.post('/add', async (req, res) => {
     try {
-       newEvent();
+       console.log(req.body);
+       newEvent(req.body);
+       console.log("POST: new Event added!");
+       res.send("SERVER: Successfully added new Event!")
     }
 
     catch {
@@ -27,9 +29,12 @@ router.post('/add', async (req, res) => {
     }
 });
 
-router.delete('/:eventId', async (req, res) => {
+router.delete('/:id', async (req, res) => {
     try {
-        //TODO: Implement remove event
+        const id = req.params.id;
+        Session.removeEvent(id);
+        console.log(`DELETE: Event ${id} deleted!`);
+        res.send("SERVER: Successfully removed Event!")
     }
 
     catch {
@@ -37,13 +42,23 @@ router.delete('/:eventId', async (req, res) => {
     }
 });
 
-router.post('/veto/:eventId', async (req, res) => {
+router.post('/veto/:id', async (req, res) => {
     try {
-        //TODO: Implement update event, for vetos
+        const MAX_VETOS = 3;
+        const event_id = req.params.id;
+        const event = await Event.findOne({_id: event_id});
+        const vetos = event.veto_count + 1;
+        if (vetos < MAX_VETOS){
+            await Event.updateOne({_id: event_id}, {veto_count: vetos});
+        } else {
+            await Session.removeEvent(event_id);
+        }
+        console.log(`POST: Veto added to Event ${event_id}`)
+        res.send("SERVER: Veto added successfully")
     }
 
     catch  {
-
+        console.log("Could not vote against event")
     }
 })
 

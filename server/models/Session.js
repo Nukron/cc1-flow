@@ -12,22 +12,37 @@ const SessionSchema = new Schema({
 
 SessionSchema.statics.loadMainSession = async function() {
     const session = await this.findOne();
-    if (session){
-        return session;
-    } else {
-        createMainSession();
-        const new_session = await this.findOne();
-        return new_session;
+    if(!session){
+        await createMainSession();
+        return await this.findOne();
     }
+    return session;
+}
+
+SessionSchema.statics.removeEvent = async function(target_id) {
+    const session = await this.loadMainSession();
+    await Event.deleteEvent(target_id);
+    await this.updateOne(session, {events: session.events.filter(e => e !== target_id)})
 }
 
 SessionSchema.method("getEvents", async function() {
     if (this.events.length > 0) {
         const events = await Promise.all(this.events.map(e_id => Event.findById(e_id)));
-        return events
+        return events.filter(e => e !== null)
     } else {
         console.log("No events yet in this session");
         return null;
+    }
+})
+
+SessionSchema.method("deleteEventsComplete", async function(id) {
+    try
+    {
+        //TODO: Implement recursive function that deletes related Elements
+    }
+    catch (err)
+    {
+        return console.error(err);
     }
 })
 

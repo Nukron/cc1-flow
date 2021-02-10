@@ -31,24 +31,12 @@ EventSchema.statics.createTestEvent = function(){
 
 EventSchema.statics.deleteEvent = async function(id) {
     try {
-
+        await this.deleteOne({_id: id})
     }
     catch (err) {
         console.log(err);
     }
 }
-
-EventSchema.statics.deleteRelatedEvents = async function(id, events)
-{
-    try
-    {
-        //TODO: Implement recursive function that deletes related Elements
-    }
-    catch (err)
-    {
-        return console.error(err);
-    }
-};
 
 const Event = mongoose.model('Event', EventSchema);
 

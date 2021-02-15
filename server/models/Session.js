@@ -27,6 +27,7 @@ SessionSchema.method('removeEvent', async function(target_id) {
 SessionSchema.method("getEvents", async function() {
     if (this.events.length > 0) {
         const events = await Promise.all(this.events.map(e_id => Event.findById(e_id)));
+        console.log(events);
         return events.filter(e => e !== null)
     } else {
         console.log("No events yet in this session");

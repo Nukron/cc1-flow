@@ -14,7 +14,20 @@ router.get('/', async (req, res) => {
     catch (err)
     {
         console.error('ERROR: ', err.message);
-        res.render('index', {errors: [{text: 'Couldn\'t load a story, sorry.'}]});
+    }
+});
+
+router.get('/session', async (req, res) => {
+
+    try
+    {
+        const session = await Session.loadMainSession();
+        res.send(session);
+
+    }
+    catch (err)
+    {
+        console.error('ERROR: ', err.message);
     }
 });
 

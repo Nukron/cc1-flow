@@ -44,7 +44,7 @@ module.exports = class EventFrame extends React.Component {
                 <p> {event.content} </p>
                 {
                     selected ?
-                    <button onClick={session.vetoEvent(event._id)}> Veto </button>
+                    <button onClick={() => session.vetoEvent(event._id)}> Veto </button>
                     : null
                 }
                 {

@@ -270,7 +270,7 @@ module.exports = class EventFrame extends React.Component {
                 React.createElement("p", null, " ", event.content, " "), 
                 
                     selected ?
-                    React.createElement("button", {onClick: session.vetoEvent(event._id)}, " Veto ")
+                    React.createElement("button", {onClick: () => session.vetoEvent(event._id)}, " Veto ")
                     : null, 
                 
                 

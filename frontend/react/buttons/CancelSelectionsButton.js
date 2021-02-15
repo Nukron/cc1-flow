@@ -8,7 +8,7 @@ const React = require('react');
 module.exports = class CancelSelectionsButton extends React.Component {
 
     constructor(props) {
-
+        super(props);
     }
 
     componentDidMount() {
@@ -16,7 +16,7 @@ module.exports = class CancelSelectionsButton extends React.Component {
     }
 
     render(){
-        
-    }
+        return <button> Cancel Selections </button>
+    }   
 
 }

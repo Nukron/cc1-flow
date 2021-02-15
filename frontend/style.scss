@@ -9,6 +9,11 @@
         background-color: gray;
         border-radius: 5px;
 
+        &.root {
+            background-color: rgb(31, 38, 46);
+            color: white;
+        }
+
         &.selected {
             background-color: rgb(72, 107, 148);
             color: white;

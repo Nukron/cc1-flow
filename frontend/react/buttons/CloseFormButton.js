@@ -1,12 +1,11 @@
 const React = require('react');
-const axios = require('axios');
 
 //TODO: Design single Event 
 
 //TODO: Event interaction
 
 
-module.exports = class VetoButton extends React.Component {
+module.exports = class CloseFormButton extends React.Component {
 
     constructor(props) {
         super(props);
@@ -17,7 +16,7 @@ module.exports = class VetoButton extends React.Component {
     }
 
     render(){
-       return <button> Veto </button>
+       return <button> Close </button>
     }
 
 }

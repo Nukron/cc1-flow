@@ -10,6 +10,11 @@
   border-radius: 5px;
 }
 
+.flow-session .event-frame.root {
+  background-color: #1f262e;
+  color: white;
+}
+
 .flow-session .event-frame.selected {
   background-color: #486b94;
   color: white;

@@ -193,11 +193,10 @@ ReactDOM.render(
     React.createElement(FlowSessionFrame, null), document.getElementById("root")
 );
 
-},{"./react/SessionFrame":5,"react":39,"react-dom":36}],3:[function(require,module,exports){
+},{"./react/SessionFrame":5,"react":44,"react-dom":41}],3:[function(require,module,exports){
 const React = require('react');
-
+const VetoButton = require('./buttons/VetoButton')
 //TODO: Design single Event 
-
 //TODO: Event interaction
 
 
@@ -208,32 +207,54 @@ module.exports = class EventFrame extends React.Component {
         this.state = {selected: false};
     }
 
-    componentDidMount() {
-    }
-
     onClick(e){
-        console.log(this);
         const {selected} = this.state;
-        console.log("Click!");
+        const {event, session} = this.props;
         if (selected){
             this.setState({selected: false});
+            session.removeEventFromSelection(event._id);
         } else {
-            this.setState({selected: true});  
+            this.setState({selected: true}); 
+            session.addEventToSelection(event._id); 
         }
     }
 
+    setEventClass(){
+        const {event, session, index} = this.props;
+        const {selected} = this.state;
+        let classes = "event-frame";
+        if (selected){
+            classes = classes + " selected";
+        }
+        if (index == 0){
+            classes = classes + " root";
+        }
+        return classes;
+    }
+
     render(){
-        const {event} = this.props;
+        const {event, session} = this.props;
+        const {selected} = this.state;
         return (
-            React.createElement("div", {className: this.state.selected ? "event-frame selected" : "event-frame", onClick: (e) => this.onClick(e)}, 
-                React.createElement("p", null, " ", event.content, " ")
+            React.createElement("div", {className: this.setEventClass(), "event-id": event._id, onClick: (e) => this.onClick(e)}, 
+                React.createElement("p", null, " ", event.content, " "), 
+                
+                    selected ?
+                    React.createElement("button", {onClick: session.vetoEvent(event._id)}, " Veto ")
+                    : null, 
+                
+                
+                    event.veto_count > 0 ?
+                    React.createElement("p", null, " Vetos: ", event.veto_count, " ")
+                    : null
+                
             )
         )
     }
 
 }
 
-},{"react":39}],4:[function(require,module,exports){
+},{"./buttons/VetoButton":8,"react":44}],4:[function(require,module,exports){
 const React = require('react');
 const EventFrame = require('./EventFrame');
 
@@ -247,16 +268,12 @@ module.exports = class EventList extends React.Component {
         super(props);
     }
 
-    componentDidUpdate() {
-        
-    }
-
     render(){
-        const {events} = this.props;
+        const {events, session} = this.props;
         return (
             React.createElement("div", {className: "eventList"}, 
                 events.map( (event, index) => {
-                    return React.createElement(EventFrame, {key: index, event: event})
+                    return React.createElement(EventFrame, {key: index, index: index, event: event, session: session})
                 })
             )
         )
@@ -264,11 +281,13 @@ module.exports = class EventList extends React.Component {
 
 }
 
-},{"./EventFrame":3,"react":39}],5:[function(require,module,exports){
+},{"./EventFrame":3,"react":44}],5:[function(require,module,exports){
 const React = require('react');
 const axios = require('axios');
 const EventList = require('./EventList');
-
+const CancelSelectionsButton = require('./buttons/CancelSelectionsButton');
+const NewEventForm = require('./prompts/NewEventForm');
+const RootEventNotice = require('./prompts/RootEventNotice');
 //TODO: Function for Root Event Prompt
 
 module.exports = class FlowSessionFrame extends React.Component {
@@ -277,7 +296,8 @@ module.exports = class FlowSessionFrame extends React.Component {
         super(props);
         this.state = {
             session: null,
-            events: []
+            events: [],
+            selectedEvents: []
         };
     }
 
@@ -285,7 +305,29 @@ module.exports = class FlowSessionFrame extends React.Component {
 
     }
 
-    componentDidMount() {
+    addEventToSelection(id){
+        console.log("adding event: ", id);
+        const {selectedEvents} = this.state;
+        this.setState({selectedEvents: selectedEvents.concat(id)})
+    }
+
+    removeEventFromSelection(id){
+        console.log("removing event: ", id);
+        const {selectedEvents} = this.state;
+        this.setState({selectedEvents: selectedEvents.filter(e => e !== id)})
+    }
+
+    vetoEvent(id){
+        axios.post(`http://localhost:3220/events/veto/${id}`)
+          .then(res => {
+            if (res.data){
+                console.log("Added veto: ", id);
+            }
+            this.refreshSession();
+        })
+    }
+
+    refreshSession(){
         axios.get(`http://localhost:3220/session`)
           .then(res => {
             this.setState({session: res.data});
@@ -298,18 +340,192 @@ module.exports = class FlowSessionFrame extends React.Component {
         })
     }
 
+    cancelSelection(){
+        console.log("cancel all selections!");
+        this.setState({selectedEvents: []})
+        //TODO: Propagate down to Events and make selected false
+    }
+
+    componentDidMount() {
+        this.refreshSession();
+    }
+
     render(){
+        const {selectedEvents, session, events} = this.state;
+        console.log(selectedEvents);
         return (
-            React.createElement("section", {className: "flow-session"}, 
-                React.createElement(EventList, {events: this.state.events})
-            )
+            session ? 
+                React.createElement("section", {className: "flow-session"}, 
+                     
+                        selectedEvents.length > 0 ?
+                        React.createElement(CancelSelectionsButton, {onClick: () => this.cancelSelection()})
+                        : null, 
+                    
+                    
+                        session.root_event ? 
+                        null 
+                        : React.createElement(RootEventNotice, null), 
+                    
+                    
+                        session.root_event ? 
+                        null 
+                        : React.createElement(NewEventForm, null), 
+                    
+
+                    React.createElement(EventList, {session: this, events: this.state.events}), 
+
+                    
+                        selectedEvents.length > 0 ?
+                        React.createElement(NewEventForm, null)
+                        : null
+                    
+                ) 
+                : null
         )
     }
 }
 
-},{"./EventList":4,"axios":6,"react":39}],6:[function(require,module,exports){
+},{"./EventList":4,"./buttons/CancelSelectionsButton":6,"./prompts/NewEventForm":9,"./prompts/RootEventNotice":10,"axios":11,"react":44}],6:[function(require,module,exports){
+const React = require('react');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class CancelSelectionsButton extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+
+    }
+
+    render(){
+        return React.createElement("button", null, " Cancel Selections ")
+    }   
+
+}
+
+},{"react":44}],7:[function(require,module,exports){
+const React = require('react');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class CloseFormButton extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+
+    }
+
+    render(){
+       return React.createElement("button", null, " Close ")
+    }
+
+}
+
+},{"react":44}],8:[function(require,module,exports){
+const React = require('react');
+const axios = require('axios');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class VetoButton extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+
+    }
+
+    render(){
+       return React.createElement("button", null, " Veto ")
+    }
+
+}
+
+},{"axios":11,"react":44}],9:[function(require,module,exports){
+const React = require('react');
+const CloseFormButton = require('../buttons/CloseFormButton');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class NewEventForm extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    createEvent(){
+        let addEvent = document.getElementById("add-event");
+        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("input")[0].value;
+        console.log(content);
+    }
+
+    render(){
+        return (
+            React.createElement("div", {id: "add-event", className: "add-event-form"}, 
+                React.createElement(CloseFormButton, {target: "add-event"}), 
+                React.createElement("div", {className: "content"}, 
+                    React.createElement("label", {htmlFor: "content"}, " What happens next? "), 
+                    React.createElement("input", {type: "text", name: "content", required: true})
+                ), 
+                React.createElement("button", {onClick: () => this.createEvent()}, " Create Event ")
+            )
+        )
+    }
+
+}
+
+},{"../buttons/CloseFormButton":7,"react":44}],10:[function(require,module,exports){
+const React = require('react');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class RootEventNotice extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidMount() {
+
+    }
+
+    render(){
+
+        return (
+            React.createElement("div", {className: "notice"}, 
+                React.createElement("p", null, " There is no origin event yet. Please add the first event to begin the Flow! ")
+            )
+        )
+    }
+
+}
+
+},{"react":44}],11:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":8}],7:[function(require,module,exports){
+},{"./lib/axios":13}],12:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -490,7 +706,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/buildFullPath":14,"../core/createError":15,"./../core/settle":19,"./../helpers/buildURL":23,"./../helpers/cookies":25,"./../helpers/isURLSameOrigin":28,"./../helpers/parseHeaders":30,"./../utils":32}],8:[function(require,module,exports){
+},{"../core/buildFullPath":19,"../core/createError":20,"./../core/settle":24,"./../helpers/buildURL":28,"./../helpers/cookies":30,"./../helpers/isURLSameOrigin":33,"./../helpers/parseHeaders":35,"./../utils":37}],13:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -548,7 +764,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":9,"./cancel/CancelToken":10,"./cancel/isCancel":11,"./core/Axios":12,"./core/mergeConfig":18,"./defaults":21,"./helpers/bind":22,"./helpers/isAxiosError":27,"./helpers/spread":31,"./utils":32}],9:[function(require,module,exports){
+},{"./cancel/Cancel":14,"./cancel/CancelToken":15,"./cancel/isCancel":16,"./core/Axios":17,"./core/mergeConfig":23,"./defaults":26,"./helpers/bind":27,"./helpers/isAxiosError":32,"./helpers/spread":36,"./utils":37}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -569,7 +785,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],10:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -628,14 +844,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":9}],11:[function(require,module,exports){
+},{"./Cancel":14}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],12:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -732,7 +948,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":23,"./../utils":32,"./InterceptorManager":13,"./dispatchRequest":16,"./mergeConfig":18}],13:[function(require,module,exports){
+},{"../helpers/buildURL":28,"./../utils":37,"./InterceptorManager":18,"./dispatchRequest":21,"./mergeConfig":23}],18:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -786,7 +1002,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":32}],14:[function(require,module,exports){
+},{"./../utils":37}],19:[function(require,module,exports){
 'use strict';
 
 var isAbsoluteURL = require('../helpers/isAbsoluteURL');
@@ -808,7 +1024,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
   return requestedURL;
 };
 
-},{"../helpers/combineURLs":24,"../helpers/isAbsoluteURL":26}],15:[function(require,module,exports){
+},{"../helpers/combineURLs":29,"../helpers/isAbsoluteURL":31}],20:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -828,7 +1044,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":17}],16:[function(require,module,exports){
+},{"./enhanceError":22}],21:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -909,7 +1125,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":11,"../defaults":21,"./../utils":32,"./transformData":20}],17:[function(require,module,exports){
+},{"../cancel/isCancel":16,"../defaults":26,"./../utils":37,"./transformData":25}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -953,7 +1169,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],18:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -1042,7 +1258,7 @@ module.exports = function mergeConfig(config1, config2) {
   return config;
 };
 
-},{"../utils":32}],19:[function(require,module,exports){
+},{"../utils":37}],24:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -1069,7 +1285,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":15}],20:[function(require,module,exports){
+},{"./createError":20}],25:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1091,7 +1307,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":32}],21:[function(require,module,exports){
+},{"./../utils":37}],26:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -1193,7 +1409,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this)}).call(this,require('_process'))
-},{"./adapters/http":7,"./adapters/xhr":7,"./helpers/normalizeHeaderName":29,"./utils":32,"_process":1}],22:[function(require,module,exports){
+},{"./adapters/http":12,"./adapters/xhr":12,"./helpers/normalizeHeaderName":34,"./utils":37,"_process":1}],27:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -1206,7 +1422,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],23:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1278,7 +1494,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":32}],24:[function(require,module,exports){
+},{"./../utils":37}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1294,7 +1510,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1349,7 +1565,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":32}],26:[function(require,module,exports){
+},{"./../utils":37}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1365,7 +1581,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],27:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1378,7 +1594,7 @@ module.exports = function isAxiosError(payload) {
   return (typeof payload === 'object') && (payload.isAxiosError === true);
 };
 
-},{}],28:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1448,7 +1664,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":32}],29:[function(require,module,exports){
+},{"./../utils":37}],34:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -1462,7 +1678,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":32}],30:[function(require,module,exports){
+},{"../utils":37}],35:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1517,7 +1733,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":32}],31:[function(require,module,exports){
+},{"./../utils":37}],36:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1546,7 +1762,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],32:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -1899,7 +2115,7 @@ module.exports = {
   stripBOM: stripBOM
 };
 
-},{"./helpers/bind":22}],33:[function(require,module,exports){
+},{"./helpers/bind":27}],38:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -1991,7 +2207,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react-dom.development.js
@@ -28257,7 +28473,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":33,"react":39,"scheduler":44,"scheduler/tracing":45}],35:[function(require,module,exports){
+},{"_process":1,"object-assign":38,"react":44,"scheduler":49,"scheduler/tracing":50}],40:[function(require,module,exports){
 /** @license React v17.0.1
  * react-dom.production.min.js
  *
@@ -28556,7 +28772,7 @@ exports.findDOMNode=function(a){if(null==a)return null;if(1===a.nodeType)return 
 exports.render=function(a,b,c){if(!rk(b))throw Error(y(200));return tk(null,a,b,!1,c)};exports.unmountComponentAtNode=function(a){if(!rk(a))throw Error(y(40));return a._reactRootContainer?(Xj(function(){tk(null,null,a,!1,function(){a._reactRootContainer=null;a[ff]=null})}),!0):!1};exports.unstable_batchedUpdates=Wj;exports.unstable_createPortal=function(a,b){return uk(a,b,2<arguments.length&&void 0!==arguments[2]?arguments[2]:null)};
 exports.unstable_renderSubtreeIntoContainer=function(a,b,c,d){if(!rk(c))throw Error(y(200));if(null==a||void 0===a._reactInternals)throw Error(y(38));return tk(a,b,c,!1,d)};exports.version="17.0.1";
 
-},{"object-assign":33,"react":39,"scheduler":44}],36:[function(require,module,exports){
+},{"object-assign":38,"react":44,"scheduler":49}],41:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -28598,7 +28814,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react-dom.development.js":34,"./cjs/react-dom.production.min.js":35,"_process":1}],37:[function(require,module,exports){
+},{"./cjs/react-dom.development.js":39,"./cjs/react-dom.production.min.js":40,"_process":1}],42:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react.development.js
@@ -30935,7 +31151,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":33}],38:[function(require,module,exports){
+},{"_process":1,"object-assign":38}],43:[function(require,module,exports){
 /** @license React v17.0.1
  * react.production.min.js
  *
@@ -30960,7 +31176,7 @@ key:d,ref:k,props:e,_owner:h}};exports.createContext=function(a,b){void 0===b&&(
 exports.lazy=function(a){return{$$typeof:v,_payload:{_status:-1,_result:a},_init:Q}};exports.memo=function(a,b){return{$$typeof:u,type:a,compare:void 0===b?null:b}};exports.useCallback=function(a,b){return S().useCallback(a,b)};exports.useContext=function(a,b){return S().useContext(a,b)};exports.useDebugValue=function(){};exports.useEffect=function(a,b){return S().useEffect(a,b)};exports.useImperativeHandle=function(a,b,c){return S().useImperativeHandle(a,b,c)};
 exports.useLayoutEffect=function(a,b){return S().useLayoutEffect(a,b)};exports.useMemo=function(a,b){return S().useMemo(a,b)};exports.useReducer=function(a,b,c){return S().useReducer(a,b,c)};exports.useRef=function(a){return S().useRef(a)};exports.useState=function(a){return S().useState(a)};exports.version="17.0.1";
 
-},{"object-assign":33}],39:[function(require,module,exports){
+},{"object-assign":38}],44:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -30971,7 +31187,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react.development.js":37,"./cjs/react.production.min.js":38,"_process":1}],40:[function(require,module,exports){
+},{"./cjs/react.development.js":42,"./cjs/react.production.min.js":43,"_process":1}],45:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler-tracing.development.js
@@ -31322,7 +31538,7 @@ exports.unstable_wrap = unstable_wrap;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],41:[function(require,module,exports){
+},{"_process":1}],46:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler-tracing.production.min.js
  *
@@ -31333,7 +31549,7 @@ exports.unstable_wrap = unstable_wrap;
  */
 'use strict';var b=0;exports.__interactionsRef=null;exports.__subscriberRef=null;exports.unstable_clear=function(a){return a()};exports.unstable_getCurrent=function(){return null};exports.unstable_getThreadID=function(){return++b};exports.unstable_subscribe=function(){};exports.unstable_trace=function(a,d,c){return c()};exports.unstable_unsubscribe=function(){};exports.unstable_wrap=function(a){return a};
 
-},{}],42:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler.development.js
@@ -32181,7 +32397,7 @@ exports.unstable_wrapCallback = unstable_wrapCallback;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],43:[function(require,module,exports){
+},{"_process":1}],48:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler.production.min.js
  *
@@ -32203,7 +32419,7 @@ exports.unstable_next=function(a){switch(P){case 1:case 2:case 3:var b=3;break;d
 exports.unstable_scheduleCallback=function(a,b,c){var d=exports.unstable_now();"object"===typeof c&&null!==c?(c=c.delay,c="number"===typeof c&&0<c?d+c:d):c=d;switch(a){case 1:var e=-1;break;case 2:e=250;break;case 5:e=1073741823;break;case 4:e=1E4;break;default:e=5E3}e=c+e;a={id:N++,callback:b,priorityLevel:a,startTime:c,expirationTime:e,sortIndex:-1};c>d?(a.sortIndex=c,H(M,a),null===J(L)&&a===J(M)&&(S?h():S=!0,g(U,c-d))):(a.sortIndex=e,H(L,a),R||Q||(R=!0,f(V)));return a};
 exports.unstable_wrapCallback=function(a){var b=P;return function(){var c=P;P=b;try{return a.apply(this,arguments)}finally{P=c}}};
 
-},{}],44:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32214,7 +32430,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler.development.js":42,"./cjs/scheduler.production.min.js":43,"_process":1}],45:[function(require,module,exports){
+},{"./cjs/scheduler.development.js":47,"./cjs/scheduler.production.min.js":48,"_process":1}],50:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32225,4 +32441,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler-tracing.development.js":40,"./cjs/scheduler-tracing.production.min.js":41,"_process":1}]},{},[2]);
+},{"./cjs/scheduler-tracing.development.js":45,"./cjs/scheduler-tracing.production.min.js":46,"_process":1}]},{},[2]);

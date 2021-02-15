@@ -22,6 +22,9 @@ SessionSchema.statics.loadMainSession = async function() {
 SessionSchema.method('removeEvent', async function(target_id) {
     await Event.deleteEvent(target_id);
     await this.updateOne({events: this.events.filter(e => e !== target_id)})
+    if(this.root_event == target_id){
+        await this.updateOne({root_event: null});
+    }
 });
 
 SessionSchema.method("getEvents", async function() {

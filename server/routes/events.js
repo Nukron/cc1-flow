@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
 router.post('/add', async (req, res) => {
     try {
        console.log(req.body);
-       newEvent(req.body);
+       await newEvent(req.body);
        console.log("POST: new Event added!");
        res.send("SERVER: Successfully added new Event!")
     }
@@ -52,14 +52,15 @@ router.post('/veto/:id', async (req, res) => {
         if (vetos < MAX_VETOS){
             await Event.updateOne({_id: event_id}, {veto_count: vetos});
         } else {
-            await Session.removeEvent(event_id);
+            const session = await Session.loadMainSession();
+            await session.removeEventsDeep(event_id);
         }
         console.log(`POST: Veto added to Event ${event_id}`)
         res.send("SERVER: Veto added successfully")
     }
 
-    catch  {
-        console.log("Could not vote against event")
+    catch(err)  {
+        console.log("Could not vote against event: ", err);
     }
 })
 
@@ -68,11 +69,11 @@ router.post('/veto/:id', async (req, res) => {
 async function newEvent (event) {
     Session.loadMainSession().then(s => {
         const new_event = Event.createEvent(event);
-        new_event.save().then(event => {
+        new_event.save().then(async event => {
             if (s.root_event){
-                Session.updateOne(s, {events: s.events.concat([event._id])}, (err, res) => { if(err) console.log(err); console.log(res) })
+                await Session.updateOne(s, {events: s.events.concat([event._id])}, (err, res) => { if(err) console.log(err); console.log(res) })
             } else {
-                Session.updateOne(s, {root_event: event._id, events: s.events.concat([event._id])}, (err, res) => { if(err) console.log(err); console.log(res) })
+                await Session.updateOne(s, {root_event: event._id, events: s.events.concat([event._id])}, (err, res) => { if(err) console.log(err); console.log(res) })
             }
         })
     })

@@ -21,35 +21,45 @@ module.exports = class FlowSessionFrame extends React.Component {
 
     }
 
+    addEvent(event){
+        const this2 = this;
+        axios.post(`/events/add`, event)
+          .then(function (response) {
+            console.log("added new event!");
+            setTimeout(() => this2.refreshSession(), 200);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
+
     addEventToSelection(id){
-        console.log("adding event: ", id);
         const {selectedEvents} = this.state;
         this.setState({selectedEvents: selectedEvents.concat(id)})
     }
 
     removeEventFromSelection(id){
-        console.log("removing event: ", id);
         const {selectedEvents} = this.state;
         this.setState({selectedEvents: selectedEvents.filter(e => e !== id)})
     }
 
     vetoEvent(id){
-        axios.post(`http://localhost:3220/events/veto/${id}`)
-          .then(res => {
-            if (res.data){
+        const this2 = this;
+        axios.post(`/events/veto/${id}`)
+          .then(() => {
                 console.log("Added veto: ", id);
-            }
-            this.refreshSession();
+                setTimeout(() => this2.refreshSession(), 200);
         })
     }
 
     refreshSession(){
-        axios.get(`http://localhost:3220/session`)
+        console.log("Refreshing");
+        axios.get(`/session`)
           .then(res => {
             this.setState({session: res.data});
             console.log("Axios: ", res.data);
         })
-        axios.get(`http://localhost:3220/events`)
+        axios.get(`/events`)
           .then(res => {
             this.setState({events: res.data});
             console.log("Axios: ", res.data);
@@ -68,7 +78,6 @@ module.exports = class FlowSessionFrame extends React.Component {
 
     render(){
         const {selectedEvents, session, events} = this.state;
-        console.log(selectedEvents);
         return (
             session ? 
                 <section className="flow-session">
@@ -85,14 +94,16 @@ module.exports = class FlowSessionFrame extends React.Component {
                     {
                         session.root_event ? 
                         null 
-                        : <NewEventForm/>
+                        : <NewEventForm selected={selectedEvents} session={this}/>
                     }
-
-                    <EventList session={this} events={this.state.events}/>
-
+                    {
+                        events.length > 0 ?
+                        <EventList session={this} events={this.state.events}/>
+                        : null
+                    }
                     {
                         selectedEvents.length > 0 ?
-                        <NewEventForm/>
+                        <NewEventForm selected={selectedEvents} session={this}/>
                         : null
                     }
                 </section> 

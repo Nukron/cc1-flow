@@ -341,6 +341,7 @@ module.exports = class FlowSessionFrame extends React.Component {
           .then(function (response) {
             console.log("added new event!");
             setTimeout(() => this2.refreshSession(), 200);
+            this2.cancelSelection();
           })
           .catch(function (error) {
             console.log(error);
@@ -397,7 +398,7 @@ module.exports = class FlowSessionFrame extends React.Component {
                 React.createElement("section", {className: "flow-session"}, 
                      
                         selectedEvents.length > 0 ?
-                        React.createElement(CancelSelectionsButton, {onClick: () => this.cancelSelection()})
+                        React.createElement("button", {onClick: () => {this.cancelSelection()}}, " Cancel Selection ")
                         : null, 
                     
                     
@@ -518,7 +519,7 @@ module.exports = class NewEventForm extends React.Component {
     createEvent(){
         const {selected, session} = this.props;
         let addEvent = document.getElementById("add-event");
-        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("input")[0].value;
+        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("textarea")[0].value;
         const event = {
             degree: 1,
             content,
@@ -537,8 +538,8 @@ module.exports = class NewEventForm extends React.Component {
                     return React.createElement(EventFragment, {key: index, event: session.state.events.find(event => event._id == event_id)})
                 }), 
                 React.createElement("div", {className: "content"}, 
-                    React.createElement("label", {htmlFor: "content"}, " What happens next? "), 
-                    React.createElement("input", {type: "text", name: "content", required: true})
+                    React.createElement("p", null, " What happens next? "), 
+                    React.createElement("textarea", {name: "content"})
                 ), 
                 React.createElement("button", {onClick: () => this.createEvent()}, " Create Event ")
             )

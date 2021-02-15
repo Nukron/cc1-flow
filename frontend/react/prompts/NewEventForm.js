@@ -16,7 +16,7 @@ module.exports = class NewEventForm extends React.Component {
     createEvent(){
         const {selected, session} = this.props;
         let addEvent = document.getElementById("add-event");
-        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("input")[0].value;
+        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("textarea")[0].value;
         const event = {
             degree: 1,
             content,
@@ -35,8 +35,8 @@ module.exports = class NewEventForm extends React.Component {
                     return <EventFragment key={index} event={session.state.events.find(event => event._id == event_id)}/>
                 })}
                 <div className="content">
-                    <label htmlFor="content"> What happens next? </label>
-                    <input type="text" name="content" required/>
+                    <p> What happens next? </p>
+                    <textarea name="content"/>
                 </div>
                 <button onClick={() => this.createEvent()}> Create Event </button> 
             </div>

@@ -27,6 +27,7 @@ module.exports = class FlowSessionFrame extends React.Component {
           .then(function (response) {
             console.log("added new event!");
             setTimeout(() => this2.refreshSession(), 200);
+            this2.cancelSelection();
           })
           .catch(function (error) {
             console.log(error);
@@ -83,7 +84,8 @@ module.exports = class FlowSessionFrame extends React.Component {
                 <section className="flow-session">
                     { 
                         selectedEvents.length > 0 ?
-                        <CancelSelectionsButton onClick={() => this.cancelSelection()}/>
+                        //FIXME: Events only work on the "real" HTML-Elements
+                        <button onClick={() => {this.cancelSelection()}}> Cancel Selection </button>
                         : null
                     }
                     {

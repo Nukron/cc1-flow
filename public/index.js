@@ -187,39 +187,129 @@ process.umask = function() { return 0; };
 },{}],2:[function(require,module,exports){
 const React = require('react');
 const ReactDOM = require('react-dom');
-const axios = require('axios');
-
-
-class FlowSessionFrame extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    componentDidMount() {
-        axios.get(`http://localhost:3220/events`)
-          .then(res => {
-            const events = res.data;
-            console.log(events);
-          })
-      }
-
-    render(){
-        return (
-            React.createElement("div", {className: "widget"}
-            )
-        )
-    }
-}
-
+const FlowSessionFrame = require('./react/SessionFrame');
 
 ReactDOM.render(
     React.createElement(FlowSessionFrame, null), document.getElementById("root")
 );
 
-},{"axios":3,"react":36,"react-dom":33}],3:[function(require,module,exports){
+},{"./react/SessionFrame":5,"react":39,"react-dom":36}],3:[function(require,module,exports){
+const React = require('react');
+
+//TODO: Design single Event 
+
+//TODO: Event interaction
+
+
+module.exports = class EventFrame extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {selected: false};
+    }
+
+    componentDidMount() {
+    }
+
+    onClick(e){
+        console.log(this);
+        const {selected} = this.state;
+        console.log("Click!");
+        if (selected){
+            this.setState({selected: false});
+        } else {
+            this.setState({selected: true});  
+        }
+    }
+
+    render(){
+        const {event} = this.props;
+        return (
+            React.createElement("div", {className: this.state.selected ? "event-frame selected" : "event-frame", onClick: (e) => this.onClick(e)}, 
+                React.createElement("p", null, " ", event.content, " ")
+            )
+        )
+    }
+
+}
+
+},{"react":39}],4:[function(require,module,exports){
+const React = require('react');
+const EventFrame = require('./EventFrame');
+
+//TODO: Design Event Chronology
+
+//TODO: Show connectedness
+
+module.exports = class EventList extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    componentDidUpdate() {
+        
+    }
+
+    render(){
+        const {events} = this.props;
+        return (
+            React.createElement("div", {className: "eventList"}, 
+                events.map( (event, index) => {
+                    return React.createElement(EventFrame, {key: index, event: event})
+                })
+            )
+        )
+    }
+
+}
+
+},{"./EventFrame":3,"react":39}],5:[function(require,module,exports){
+const React = require('react');
+const axios = require('axios');
+const EventList = require('./EventList');
+
+//TODO: Function for Root Event Prompt
+
+module.exports = class FlowSessionFrame extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            session: null,
+            events: []
+        };
+    }
+
+    componentDidUpdate(){
+
+    }
+
+    componentDidMount() {
+        axios.get(`http://localhost:3220/session`)
+          .then(res => {
+            this.setState({session: res.data});
+            console.log("Axios: ", res.data);
+        })
+        axios.get(`http://localhost:3220/events`)
+          .then(res => {
+            this.setState({events: res.data});
+            console.log("Axios: ", res.data);
+        })
+    }
+
+    render(){
+        return (
+            React.createElement("section", {className: "flow-session"}, 
+                React.createElement(EventList, {events: this.state.events})
+            )
+        )
+    }
+}
+
+},{"./EventList":4,"axios":6,"react":39}],6:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":5}],4:[function(require,module,exports){
+},{"./lib/axios":8}],7:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -400,7 +490,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/buildFullPath":11,"../core/createError":12,"./../core/settle":16,"./../helpers/buildURL":20,"./../helpers/cookies":22,"./../helpers/isURLSameOrigin":25,"./../helpers/parseHeaders":27,"./../utils":29}],5:[function(require,module,exports){
+},{"../core/buildFullPath":14,"../core/createError":15,"./../core/settle":19,"./../helpers/buildURL":23,"./../helpers/cookies":25,"./../helpers/isURLSameOrigin":28,"./../helpers/parseHeaders":30,"./../utils":32}],8:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -458,7 +548,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":6,"./cancel/CancelToken":7,"./cancel/isCancel":8,"./core/Axios":9,"./core/mergeConfig":15,"./defaults":18,"./helpers/bind":19,"./helpers/isAxiosError":24,"./helpers/spread":28,"./utils":29}],6:[function(require,module,exports){
+},{"./cancel/Cancel":9,"./cancel/CancelToken":10,"./cancel/isCancel":11,"./core/Axios":12,"./core/mergeConfig":18,"./defaults":21,"./helpers/bind":22,"./helpers/isAxiosError":27,"./helpers/spread":31,"./utils":32}],9:[function(require,module,exports){
 'use strict';
 
 /**
@@ -479,7 +569,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],7:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -538,14 +628,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":6}],8:[function(require,module,exports){
+},{"./Cancel":9}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],9:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -642,7 +732,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":20,"./../utils":29,"./InterceptorManager":10,"./dispatchRequest":13,"./mergeConfig":15}],10:[function(require,module,exports){
+},{"../helpers/buildURL":23,"./../utils":32,"./InterceptorManager":13,"./dispatchRequest":16,"./mergeConfig":18}],13:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -696,7 +786,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":29}],11:[function(require,module,exports){
+},{"./../utils":32}],14:[function(require,module,exports){
 'use strict';
 
 var isAbsoluteURL = require('../helpers/isAbsoluteURL');
@@ -718,7 +808,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
   return requestedURL;
 };
 
-},{"../helpers/combineURLs":21,"../helpers/isAbsoluteURL":23}],12:[function(require,module,exports){
+},{"../helpers/combineURLs":24,"../helpers/isAbsoluteURL":26}],15:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -738,7 +828,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":14}],13:[function(require,module,exports){
+},{"./enhanceError":17}],16:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -819,7 +909,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":8,"../defaults":18,"./../utils":29,"./transformData":17}],14:[function(require,module,exports){
+},{"../cancel/isCancel":11,"../defaults":21,"./../utils":32,"./transformData":20}],17:[function(require,module,exports){
 'use strict';
 
 /**
@@ -863,7 +953,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -952,7 +1042,7 @@ module.exports = function mergeConfig(config1, config2) {
   return config;
 };
 
-},{"../utils":29}],16:[function(require,module,exports){
+},{"../utils":32}],19:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -979,7 +1069,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":12}],17:[function(require,module,exports){
+},{"./createError":15}],20:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1001,7 +1091,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":29}],18:[function(require,module,exports){
+},{"./../utils":32}],21:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -1103,7 +1193,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this)}).call(this,require('_process'))
-},{"./adapters/http":4,"./adapters/xhr":4,"./helpers/normalizeHeaderName":26,"./utils":29,"_process":1}],19:[function(require,module,exports){
+},{"./adapters/http":7,"./adapters/xhr":7,"./helpers/normalizeHeaderName":29,"./utils":32,"_process":1}],22:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -1116,7 +1206,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],20:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1188,7 +1278,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":29}],21:[function(require,module,exports){
+},{"./../utils":32}],24:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1204,7 +1294,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1259,7 +1349,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":29}],23:[function(require,module,exports){
+},{"./../utils":32}],26:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1275,7 +1365,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],24:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1288,7 +1378,7 @@ module.exports = function isAxiosError(payload) {
   return (typeof payload === 'object') && (payload.isAxiosError === true);
 };
 
-},{}],25:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1358,7 +1448,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":29}],26:[function(require,module,exports){
+},{"./../utils":32}],29:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -1372,7 +1462,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":29}],27:[function(require,module,exports){
+},{"../utils":32}],30:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1427,7 +1517,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":29}],28:[function(require,module,exports){
+},{"./../utils":32}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1456,7 +1546,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],29:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -1809,7 +1899,7 @@ module.exports = {
   stripBOM: stripBOM
 };
 
-},{"./helpers/bind":19}],30:[function(require,module,exports){
+},{"./helpers/bind":22}],33:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -1901,7 +1991,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],31:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react-dom.development.js
@@ -28167,7 +28257,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":30,"react":36,"scheduler":41,"scheduler/tracing":42}],32:[function(require,module,exports){
+},{"_process":1,"object-assign":33,"react":39,"scheduler":44,"scheduler/tracing":45}],35:[function(require,module,exports){
 /** @license React v17.0.1
  * react-dom.production.min.js
  *
@@ -28466,7 +28556,7 @@ exports.findDOMNode=function(a){if(null==a)return null;if(1===a.nodeType)return 
 exports.render=function(a,b,c){if(!rk(b))throw Error(y(200));return tk(null,a,b,!1,c)};exports.unmountComponentAtNode=function(a){if(!rk(a))throw Error(y(40));return a._reactRootContainer?(Xj(function(){tk(null,null,a,!1,function(){a._reactRootContainer=null;a[ff]=null})}),!0):!1};exports.unstable_batchedUpdates=Wj;exports.unstable_createPortal=function(a,b){return uk(a,b,2<arguments.length&&void 0!==arguments[2]?arguments[2]:null)};
 exports.unstable_renderSubtreeIntoContainer=function(a,b,c,d){if(!rk(c))throw Error(y(200));if(null==a||void 0===a._reactInternals)throw Error(y(38));return tk(a,b,c,!1,d)};exports.version="17.0.1";
 
-},{"object-assign":30,"react":36,"scheduler":41}],33:[function(require,module,exports){
+},{"object-assign":33,"react":39,"scheduler":44}],36:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -28508,7 +28598,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react-dom.development.js":31,"./cjs/react-dom.production.min.js":32,"_process":1}],34:[function(require,module,exports){
+},{"./cjs/react-dom.development.js":34,"./cjs/react-dom.production.min.js":35,"_process":1}],37:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react.development.js
@@ -30845,7 +30935,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":30}],35:[function(require,module,exports){
+},{"_process":1,"object-assign":33}],38:[function(require,module,exports){
 /** @license React v17.0.1
  * react.production.min.js
  *
@@ -30870,7 +30960,7 @@ key:d,ref:k,props:e,_owner:h}};exports.createContext=function(a,b){void 0===b&&(
 exports.lazy=function(a){return{$$typeof:v,_payload:{_status:-1,_result:a},_init:Q}};exports.memo=function(a,b){return{$$typeof:u,type:a,compare:void 0===b?null:b}};exports.useCallback=function(a,b){return S().useCallback(a,b)};exports.useContext=function(a,b){return S().useContext(a,b)};exports.useDebugValue=function(){};exports.useEffect=function(a,b){return S().useEffect(a,b)};exports.useImperativeHandle=function(a,b,c){return S().useImperativeHandle(a,b,c)};
 exports.useLayoutEffect=function(a,b){return S().useLayoutEffect(a,b)};exports.useMemo=function(a,b){return S().useMemo(a,b)};exports.useReducer=function(a,b,c){return S().useReducer(a,b,c)};exports.useRef=function(a){return S().useRef(a)};exports.useState=function(a){return S().useState(a)};exports.version="17.0.1";
 
-},{"object-assign":30}],36:[function(require,module,exports){
+},{"object-assign":33}],39:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -30881,7 +30971,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react.development.js":34,"./cjs/react.production.min.js":35,"_process":1}],37:[function(require,module,exports){
+},{"./cjs/react.development.js":37,"./cjs/react.production.min.js":38,"_process":1}],40:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler-tracing.development.js
@@ -31232,7 +31322,7 @@ exports.unstable_wrap = unstable_wrap;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],38:[function(require,module,exports){
+},{"_process":1}],41:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler-tracing.production.min.js
  *
@@ -31243,7 +31333,7 @@ exports.unstable_wrap = unstable_wrap;
  */
 'use strict';var b=0;exports.__interactionsRef=null;exports.__subscriberRef=null;exports.unstable_clear=function(a){return a()};exports.unstable_getCurrent=function(){return null};exports.unstable_getThreadID=function(){return++b};exports.unstable_subscribe=function(){};exports.unstable_trace=function(a,d,c){return c()};exports.unstable_unsubscribe=function(){};exports.unstable_wrap=function(a){return a};
 
-},{}],39:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler.development.js
@@ -32091,7 +32181,7 @@ exports.unstable_wrapCallback = unstable_wrapCallback;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],40:[function(require,module,exports){
+},{"_process":1}],43:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler.production.min.js
  *
@@ -32113,7 +32203,7 @@ exports.unstable_next=function(a){switch(P){case 1:case 2:case 3:var b=3;break;d
 exports.unstable_scheduleCallback=function(a,b,c){var d=exports.unstable_now();"object"===typeof c&&null!==c?(c=c.delay,c="number"===typeof c&&0<c?d+c:d):c=d;switch(a){case 1:var e=-1;break;case 2:e=250;break;case 5:e=1073741823;break;case 4:e=1E4;break;default:e=5E3}e=c+e;a={id:N++,callback:b,priorityLevel:a,startTime:c,expirationTime:e,sortIndex:-1};c>d?(a.sortIndex=c,H(M,a),null===J(L)&&a===J(M)&&(S?h():S=!0,g(U,c-d))):(a.sortIndex=e,H(L,a),R||Q||(R=!0,f(V)));return a};
 exports.unstable_wrapCallback=function(a){var b=P;return function(){var c=P;P=b;try{return a.apply(this,arguments)}finally{P=c}}};
 
-},{}],41:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32124,7 +32214,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler.development.js":39,"./cjs/scheduler.production.min.js":40,"_process":1}],42:[function(require,module,exports){
+},{"./cjs/scheduler.development.js":42,"./cjs/scheduler.production.min.js":43,"_process":1}],45:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32135,4 +32225,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler-tracing.development.js":37,"./cjs/scheduler-tracing.production.min.js":38,"_process":1}]},{},[2]);
+},{"./cjs/scheduler-tracing.development.js":40,"./cjs/scheduler-tracing.production.min.js":41,"_process":1}]},{},[2]);

@@ -1,0 +1,22 @@
+.flow-session{
+
+    text-align: center;
+
+    .event-frame{
+        padding: 2rem;
+        margin: 1rem;
+        margin-bottom: 2rem;
+        background-color: gray;
+        border-radius: 5px;
+
+        &.selected {
+            background-color: rgb(72, 107, 148);
+            color: white;
+        }
+
+    }
+
+
+
+
+}

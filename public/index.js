@@ -220,7 +220,7 @@ module.exports = class EventFrame extends React.Component {
 
 }
 
-},{"./buttons/VetoButton":9,"react":45}],4:[function(require,module,exports){
+},{"./buttons/VetoButton":8,"react":45}],4:[function(require,module,exports){
 const React = require('react');
 const VetoButton = require('./buttons/VetoButton')
 //TODO: Design single Event 
@@ -288,7 +288,7 @@ module.exports = class EventFrame extends React.Component {
 
 }
 
-},{"./buttons/VetoButton":9,"react":45}],5:[function(require,module,exports){
+},{"./buttons/VetoButton":8,"react":45}],5:[function(require,module,exports){
 const React = require('react');
 const EventFrame = require('./EventFrame');
 
@@ -397,7 +397,6 @@ module.exports = class FlowSessionFrame extends React.Component {
         console.log("cancel all selections!");
         this.setState({selectedEvents: []})
         this.setState({cancelSelection: true})
-        //TODO: Propagate down to Events and make selected false
     }
 
     componentDidMount() {
@@ -467,30 +466,6 @@ module.exports = class CancelSelectionsButton extends React.Component {
 
 },{"react":45}],8:[function(require,module,exports){
 const React = require('react');
-
-//TODO: Design single Event 
-
-//TODO: Event interaction
-
-
-module.exports = class CloseFormButton extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    componentDidMount() {
-
-    }
-
-    render(){
-       return React.createElement("button", null, " Close ")
-    }
-
-}
-
-},{"react":45}],9:[function(require,module,exports){
-const React = require('react');
 const axios = require('axios');
 
 //TODO: Design single Event 
@@ -514,38 +489,98 @@ module.exports = class VetoButton extends React.Component {
 
 }
 
-},{"axios":12,"react":45}],10:[function(require,module,exports){
+},{"axios":12,"react":45}],9:[function(require,module,exports){
 const React = require('react');
-const CloseFormButton = require('../buttons/CloseFormButton');
-const EventFragment = require('../EventFragment');
 
 //TODO: Design single Event 
 
 //TODO: Event interaction
 
 
+module.exports = class FlowCounter extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            degree: 1,
+            units: 4
+        }
+    }
+
+    setDegree(n){
+        const {add_event} = this.props;
+        this.setState({degree: n});
+        add_event.setDegree(n);
+    }
+
+    render(){
+        const {units, degree} = this.state;
+        return (
+            React.createElement("div", {id: "flow-control", className: "flow-counter"}, 
+                React.createElement("div", {className: "flow-degree-selection"}, 
+                    
+                        [1, 2, 4].map(n => {
+                           return React.createElement("button", {className: n <= degree ? "active" : null, key: "degree-" + n, onClick: () => this.setDegree(n)}, " ", n, " ")
+                        })
+                    
+                ), 
+                React.createElement("p", null, React.createElement("span", {className: "label"}, " Flow Units: "), " ", units - degree, " ")
+            )
+        )
+    }
+
+}
+
+},{"react":45}],10:[function(require,module,exports){
+const React = require('react');
+const FlowCounter = require('../components/FlowCounter');
+const EventFragment = require('../EventFragment');
+
+
+//TODO: Make a context switch
+
 module.exports = class NewEventForm extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            degree: 1,
+            content: "",
+            author: "a_visitor",
+            context: "background"    
+        };
+    }
+
+    setContext(value){
+        this.setState({context: value});
+    }
+
+    setContent(value){
+        this.setState({content: value});
+    }
+
+    setDegree(n){
+        this.setState({degree: n})
     }
 
     createEvent(){
+        const {degree, content, author, context} = this.state;
         const {selected, session} = this.props;
-        let addEvent = document.getElementById("add-event");
-        let content = addEvent.getElementsByClassName("content")[0].getElementsByTagName("textarea")[0].value;
         const event = {
-            degree: 1,
+            degree,
             content,
             source_events: selected,
-            author: 'a_visitor',
-            plotline: 'main'
+            author,
+            context
         }
+        console.log(event);
         session.addEvent(event);
     }
 
     render(){
         const {selected, session} = this.props;
+        const {root_event} = session.state.session;
+        console.log(session);
         return (
             React.createElement("div", {id: "add-event", className: "add-event-form"}, 
                 selected.map( (event_id, index) => {
@@ -553,8 +588,22 @@ module.exports = class NewEventForm extends React.Component {
                 }), 
                 React.createElement("div", {className: "content"}, 
                     React.createElement("p", null, " What happens next? "), 
-                    React.createElement("textarea", {name: "content"})
+                    React.createElement("textarea", {name: "content", onChange: (react) => this.setContent(react.target.value)})
                 ), 
+                React.createElement("div", {className: "context-switch"}, 
+                    
+                        root_event ?
+                        ["background", "character", "main plot"].map(context => {
+                            return React.createElement("button", {className: this.state.context == context ? "active" : null, key: "context-switch-" + context, onClick: () => this.setContext(context)}, " ", context, " ")
+                        })
+                        : null
+                    
+                ), 
+                
+                    this.state.context == "main plot" ?
+                    React.createElement(FlowCounter, {add_event: this})
+                    : null, 
+                
                 React.createElement("button", {onClick: () => this.createEvent()}, " Create Event ")
             )
         )
@@ -562,7 +611,7 @@ module.exports = class NewEventForm extends React.Component {
 
 }
 
-},{"../EventFragment":3,"../buttons/CloseFormButton":8,"react":45}],11:[function(require,module,exports){
+},{"../EventFragment":3,"../components/FlowCounter":9,"react":45}],11:[function(require,module,exports){
 const React = require('react');
 
 //TODO: Design single Event 

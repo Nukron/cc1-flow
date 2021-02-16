@@ -21,6 +21,30 @@
 
     }
 
+    .add-event-form {
+        .context-switch  {
+            button {
+                background-color: lightgray;
+                color: gray;
+
+                &.active {
+                    background-color: darkgray;
+                    color: white;
+                }
+            }
+        }
+    }
+
+    .flow-counter {
+        button {
+            &.active {
+                background-color: orangered;
+                color: white;
+                font-weight: bolder;
+            }
+        }
+    }
+
 
 
 

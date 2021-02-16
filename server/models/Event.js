@@ -7,7 +7,7 @@ const EventSchema = new Schema({
     veto_count: Number,
     source_events: Array,
     author: String,
-    plotline: String,
+    context: String,
     creation_date: Date
 });
 
@@ -25,7 +25,7 @@ EventSchema.statics.createTestEvent = function(){
         content: "One day the sun stopped rising",
         source_events: [],
         author: 'anonymous',
-        plotline: 'main',
+        context: 'main',
     })
 }
 
@@ -47,7 +47,7 @@ const createEvent = function(event){
         veto_count: 0,
         source_events: event.source_events,
         author: event.author,
-        plotline: event.plotline,
+        context: event.plotline,
         creation_date: Date.now()
     })
 }

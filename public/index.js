@@ -285,6 +285,9 @@ module.exports = class EventFrame extends React.Component {
         const {selected} = this.state;
         return (
             React.createElement("div", {id: "event-" + event._id, className: this.setEventClass(), "event-id": event._id, onClick: (e) => this.onClick(e)}, 
+                React.createElement("span", null, " ", event.degree, " "), 
+                React.createElement("span", null, " ", event.context, " "), 
+                React.createElement("span", null, " ", event.source_events.length, " "), 
                 
                     selected ?
                     React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " source ")
@@ -299,7 +302,16 @@ module.exports = class EventFrame extends React.Component {
                 
                     event.veto_count > 0 ?
                     React.createElement("p", null, " Vetos: ", event.veto_count, " ")
+                    : null, 
+                
+                
+                    selected ? 
+                    React.createElement("div", {className: "creation-info"}, 
+                        React.createElement("span", null, " ", event.author, " "), 
+                        React.createElement("span", null, " ", event.creation_date, " ")
+                    )
                     : null
+                
                 
             )
         )
@@ -315,6 +327,7 @@ const EventFragment = require('./EventFragment');
 //TODO: Design Event Chronology
 
 //TODO: Show connectedness
+//TODO: Implement flow-view? (Events are shown as blobs and degree and connected with arrows)
 
 module.exports = class EventList extends React.Component {
 
@@ -354,7 +367,7 @@ module.exports = class EventList extends React.Component {
         const {showRelated, relatedEvents, focusedEvent} = this.state;
         console.log(relatedEvents);
         return (
-            React.createElement("div", {className: "eventList"}, 
+            React.createElement("div", {className: "event-list"}, 
                 events.map( (event, index) => {
                     return (
                         showRelated && focusedEvent == event._id ?

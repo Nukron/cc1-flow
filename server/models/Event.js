@@ -47,7 +47,7 @@ const createEvent = function(event){
         veto_count: 0,
         source_events: event.source_events,
         author: event.author,
-        context: event.plotline,
+        context: event.context,
         creation_date: Date.now()
     })
 }

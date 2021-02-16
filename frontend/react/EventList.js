@@ -5,6 +5,7 @@ const EventFragment = require('./EventFragment');
 //TODO: Design Event Chronology
 
 //TODO: Show connectedness
+//TODO: Implement flow-view? (Events are shown as blobs and degree and connected with arrows)
 
 module.exports = class EventList extends React.Component {
 
@@ -44,7 +45,7 @@ module.exports = class EventList extends React.Component {
         const {showRelated, relatedEvents, focusedEvent} = this.state;
         console.log(relatedEvents);
         return (
-            <div className="eventList">
+            <div className="event-list">
                 {events.map( (event, index) => {
                     return (
                         showRelated && focusedEvent == event._id ?

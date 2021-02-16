@@ -2,7 +2,24 @@
   text-align: center;
 }
 
+.flow-session .event-list {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
 .flow-session .event-frame {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
   padding: 2rem;
   margin: 1rem;
   margin-bottom: 2rem;
@@ -22,6 +39,18 @@
 
 .flow-session .event-frame.focused {
   border: solid 4px orangered;
+}
+
+.flow-session .event-fragment {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  max-width: 12rem;
+  padding: 2rem;
+  margin: 1rem;
+  margin-bottom: 2rem;
+  background-color: #435850;
+  border-radius: 5px;
 }
 
 .flow-session .add-event-form .context-switch button {

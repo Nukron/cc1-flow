@@ -1,8 +1,15 @@
 .flow-session{
-
+    
     text-align: center;
 
+    .event-list {
+        display: flex;
+        flex-direction: column;
+    }
+
     .event-frame{
+        display: flex;
+        flex-direction: column;
         padding: 2rem;
         margin: 1rem;
         margin-bottom: 2rem;
@@ -22,6 +29,16 @@
             border: solid 4px orangered;
         }
 
+    }
+
+    .event-fragment {
+        display: flex;
+        max-width: 12rem;
+        padding: 2rem;
+        margin: 1rem;
+        margin-bottom: 2rem;
+        background-color: rgb(67, 88, 80);
+        border-radius: 5px;
     }
 
     .add-event-form {
@@ -47,8 +64,6 @@
             }
         }
     }
-
-
 
 
 }

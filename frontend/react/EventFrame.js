@@ -50,6 +50,9 @@ module.exports = class EventFrame extends React.Component {
         const {selected} = this.state;
         return (
             <div id={"event-" + event._id} className={this.setEventClass()} event-id={event._id} onClick={(e) => this.onClick(e)}>
+                <span> {event.degree} </span>
+                <span> {event.context} </span>
+                <span> {event.source_events.length} </span>
                 {
                     selected ?
                     <button onClick={() => eventList.showRelatedEvents(event._id)}> source </button>
@@ -66,6 +69,15 @@ module.exports = class EventFrame extends React.Component {
                     <p> Vetos: {event.veto_count} </p>
                     : null
                 }
+                {
+                    selected ? 
+                    <div className="creation-info">
+                        <span> {event.author} </span>
+                        <span> {event.creation_date} </span>
+                    </div>
+                    : null
+                }
+                
             </div>
         )
     }

@@ -18,6 +18,9 @@
             background-color: rgb(72, 107, 148);
             color: white;
         }
+        &.focused {
+            border: solid 4px orangered;
+        }
 
     }
 

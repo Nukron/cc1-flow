@@ -20,6 +20,10 @@
   color: white;
 }
 
+.flow-session .event-frame.focused {
+  border: solid 4px orangered;
+}
+
 .flow-session .add-event-form .context-switch button {
   background-color: lightgray;
   color: gray;

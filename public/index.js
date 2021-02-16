@@ -193,9 +193,8 @@ ReactDOM.render(
     React.createElement(FlowSessionFrame, null), document.getElementById("root")
 );
 
-},{"./react/SessionFrame":6,"react":45,"react-dom":42}],3:[function(require,module,exports){
+},{"./react/SessionFrame":6,"react":44,"react-dom":41}],3:[function(require,module,exports){
 const React = require('react');
-const VetoButton = require('./buttons/VetoButton')
 
 module.exports = class EventFrame extends React.Component {
 
@@ -224,7 +223,7 @@ module.exports = class EventFrame extends React.Component {
         const {event} = this.props;
         const {expanded} = this.state;
         return ( 
-            React.createElement("div", {onClick: () => this.expandContract()}, 
+            React.createElement("div", {className: "event-fragment", onClick: () => this.expandContract()}, 
                 React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " "), 
                 React.createElement("a", {href: "#event-" + event._id}, " Go to ")
             )
@@ -233,7 +232,7 @@ module.exports = class EventFrame extends React.Component {
 
 }
 
-},{"./buttons/VetoButton":8,"react":45}],4:[function(require,module,exports){
+},{"react":44}],4:[function(require,module,exports){
 const React = require('react');
 //TODO: Design single Event 
 //TODO: Event interaction
@@ -266,7 +265,7 @@ module.exports = class EventFrame extends React.Component {
     }
 
     setEventClass(){
-        const {event, session, index} = this.props;
+        const {event, session, index, focused} = this.props;
         const {selected} = this.state;
         let classes = "event-frame";
         if (selected){
@@ -274,6 +273,9 @@ module.exports = class EventFrame extends React.Component {
         }
         if (index == 0){
             classes = classes + " root";
+        }
+        if (focused){
+            classes = classes + " focused";
         }
         return classes;
     }
@@ -305,9 +307,10 @@ module.exports = class EventFrame extends React.Component {
 
 }
 
-},{"react":45}],5:[function(require,module,exports){
+},{"react":44}],5:[function(require,module,exports){
 const React = require('react');
 const EventFrame = require('./EventFrame');
+const EventFragment = require('./EventFragment');
 
 //TODO: Design Event Chronology
 
@@ -317,6 +320,11 @@ module.exports = class EventList extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {
+            showRelated: false,
+            relatedEvents: [],
+            focusedEvent: ""
+        }
     }
 
     componentDidUpdate(){
@@ -326,20 +334,50 @@ module.exports = class EventList extends React.Component {
         }
     }
 
+    resetView(){
+        this.setState({showRelated: false, relatedEvents: [], focusedEvent: ""});
+    }
+
+    showRelatedEvents(target_id){
+        console.log("Show related events...");
+        const {events} = this.props;
+        const target_event = events.find(e => e._id == target_id);
+        this.setState({showRelated: true});
+        this.setState({focusedEvent: target_id});
+        this.setState({relatedEvents: events.filter(event => {
+            return target_event.source_events.some(id => id == event._id)
+        })});
+    }
+
     render(){
         const {events, session} = this.props;
+        const {showRelated, relatedEvents, focusedEvent} = this.state;
+        console.log(relatedEvents);
         return (
             React.createElement("div", {className: "eventList"}, 
                 events.map( (event, index) => {
-                    return React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this})
+                    return (
+                        showRelated && focusedEvent == event._id ?
+                        React.createElement("div", {className: "show-related-events"}, 
+                            
+                                relatedEvents.map( (event, index) => {
+                                    return React.createElement(EventFragment, {event: event, key: index})
+                                }), 
+                            
+                            React.createElement("button", {onClick: () => this.resetView()}, " hide "), 
+                            React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this, focused: true})
+                        )
+                        : React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this})
+                    )
                 })
             )
+            
         )
     }
 
 }
 
-},{"./EventFrame":4,"react":45}],6:[function(require,module,exports){
+},{"./EventFragment":3,"./EventFrame":4,"react":44}],6:[function(require,module,exports){
 const React = require('react');
 const axios = require('axios');
 const EventList = require('./EventList');
@@ -455,7 +493,7 @@ module.exports = class FlowSessionFrame extends React.Component {
     }
 }
 
-},{"./EventList":5,"./buttons/CancelSelectionsButton":7,"./prompts/NewEventForm":10,"./prompts/RootEventNotice":11,"axios":12,"react":45}],7:[function(require,module,exports){
+},{"./EventList":5,"./buttons/CancelSelectionsButton":7,"./prompts/NewEventForm":9,"./prompts/RootEventNotice":10,"axios":11,"react":44}],7:[function(require,module,exports){
 const React = require('react');
 
 //TODO: Design single Event 
@@ -479,32 +517,7 @@ module.exports = class CancelSelectionsButton extends React.Component {
 
 }
 
-},{"react":45}],8:[function(require,module,exports){
-const React = require('react');
-const axios = require('axios');
-
-//TODO: Design single Event 
-
-//TODO: Event interaction
-
-
-module.exports = class VetoButton extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
-
-    componentDidMount() {
-
-    }
-
-    render(){
-       return React.createElement("button", null, " Veto ")
-    }
-
-}
-
-},{"axios":12,"react":45}],9:[function(require,module,exports){
+},{"react":44}],8:[function(require,module,exports){
 const React = require('react');
 
 //TODO: Design single Event 
@@ -546,7 +559,7 @@ module.exports = class FlowCounter extends React.Component {
 
 }
 
-},{"react":45}],10:[function(require,module,exports){
+},{"react":44}],9:[function(require,module,exports){
 const React = require('react');
 const FlowCounter = require('../components/FlowCounter');
 const EventFragment = require('../EventFragment');
@@ -626,7 +639,7 @@ module.exports = class NewEventForm extends React.Component {
 
 }
 
-},{"../EventFragment":3,"../components/FlowCounter":9,"react":45}],11:[function(require,module,exports){
+},{"../EventFragment":3,"../components/FlowCounter":8,"react":44}],10:[function(require,module,exports){
 const React = require('react');
 
 //TODO: Design single Event 
@@ -655,9 +668,9 @@ module.exports = class RootEventNotice extends React.Component {
 
 }
 
-},{"react":45}],12:[function(require,module,exports){
+},{"react":44}],11:[function(require,module,exports){
 module.exports = require('./lib/axios');
-},{"./lib/axios":14}],13:[function(require,module,exports){
+},{"./lib/axios":13}],12:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -838,7 +851,7 @@ module.exports = function xhrAdapter(config) {
   });
 };
 
-},{"../core/buildFullPath":20,"../core/createError":21,"./../core/settle":25,"./../helpers/buildURL":29,"./../helpers/cookies":31,"./../helpers/isURLSameOrigin":34,"./../helpers/parseHeaders":36,"./../utils":38}],14:[function(require,module,exports){
+},{"../core/buildFullPath":19,"../core/createError":20,"./../core/settle":24,"./../helpers/buildURL":28,"./../helpers/cookies":30,"./../helpers/isURLSameOrigin":33,"./../helpers/parseHeaders":35,"./../utils":37}],13:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -896,7 +909,7 @@ module.exports = axios;
 // Allow use of default import syntax in TypeScript
 module.exports.default = axios;
 
-},{"./cancel/Cancel":15,"./cancel/CancelToken":16,"./cancel/isCancel":17,"./core/Axios":18,"./core/mergeConfig":24,"./defaults":27,"./helpers/bind":28,"./helpers/isAxiosError":33,"./helpers/spread":37,"./utils":38}],15:[function(require,module,exports){
+},{"./cancel/Cancel":14,"./cancel/CancelToken":15,"./cancel/isCancel":16,"./core/Axios":17,"./core/mergeConfig":23,"./defaults":26,"./helpers/bind":27,"./helpers/isAxiosError":32,"./helpers/spread":36,"./utils":37}],14:[function(require,module,exports){
 'use strict';
 
 /**
@@ -917,7 +930,7 @@ Cancel.prototype.__CANCEL__ = true;
 
 module.exports = Cancel;
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 var Cancel = require('./Cancel');
@@ -976,14 +989,14 @@ CancelToken.source = function source() {
 
 module.exports = CancelToken;
 
-},{"./Cancel":15}],17:[function(require,module,exports){
+},{"./Cancel":14}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = function isCancel(value) {
   return !!(value && value.__CANCEL__);
 };
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1080,7 +1093,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 
 module.exports = Axios;
 
-},{"../helpers/buildURL":29,"./../utils":38,"./InterceptorManager":19,"./dispatchRequest":22,"./mergeConfig":24}],19:[function(require,module,exports){
+},{"../helpers/buildURL":28,"./../utils":37,"./InterceptorManager":18,"./dispatchRequest":21,"./mergeConfig":23}],18:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1134,7 +1147,7 @@ InterceptorManager.prototype.forEach = function forEach(fn) {
 
 module.exports = InterceptorManager;
 
-},{"./../utils":38}],20:[function(require,module,exports){
+},{"./../utils":37}],19:[function(require,module,exports){
 'use strict';
 
 var isAbsoluteURL = require('../helpers/isAbsoluteURL');
@@ -1156,7 +1169,7 @@ module.exports = function buildFullPath(baseURL, requestedURL) {
   return requestedURL;
 };
 
-},{"../helpers/combineURLs":30,"../helpers/isAbsoluteURL":32}],21:[function(require,module,exports){
+},{"../helpers/combineURLs":29,"../helpers/isAbsoluteURL":31}],20:[function(require,module,exports){
 'use strict';
 
 var enhanceError = require('./enhanceError');
@@ -1176,7 +1189,7 @@ module.exports = function createError(message, config, code, request, response) 
   return enhanceError(error, config, code, request, response);
 };
 
-},{"./enhanceError":23}],22:[function(require,module,exports){
+},{"./enhanceError":22}],21:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1257,7 +1270,7 @@ module.exports = function dispatchRequest(config) {
   });
 };
 
-},{"../cancel/isCancel":17,"../defaults":27,"./../utils":38,"./transformData":26}],23:[function(require,module,exports){
+},{"../cancel/isCancel":16,"../defaults":26,"./../utils":37,"./transformData":25}],22:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1301,7 +1314,7 @@ module.exports = function enhanceError(error, config, code, request, response) {
   return error;
 };
 
-},{}],24:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -1390,7 +1403,7 @@ module.exports = function mergeConfig(config1, config2) {
   return config;
 };
 
-},{"../utils":38}],25:[function(require,module,exports){
+},{"../utils":37}],24:[function(require,module,exports){
 'use strict';
 
 var createError = require('./createError');
@@ -1417,7 +1430,7 @@ module.exports = function settle(resolve, reject, response) {
   }
 };
 
-},{"./createError":21}],26:[function(require,module,exports){
+},{"./createError":20}],25:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1439,7 +1452,7 @@ module.exports = function transformData(data, headers, fns) {
   return data;
 };
 
-},{"./../utils":38}],27:[function(require,module,exports){
+},{"./../utils":37}],26:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -1541,7 +1554,7 @@ utils.forEach(['post', 'put', 'patch'], function forEachMethodWithData(method) {
 module.exports = defaults;
 
 }).call(this)}).call(this,require('_process'))
-},{"./adapters/http":13,"./adapters/xhr":13,"./helpers/normalizeHeaderName":35,"./utils":38,"_process":1}],28:[function(require,module,exports){
+},{"./adapters/http":12,"./adapters/xhr":12,"./helpers/normalizeHeaderName":34,"./utils":37,"_process":1}],27:[function(require,module,exports){
 'use strict';
 
 module.exports = function bind(fn, thisArg) {
@@ -1554,7 +1567,7 @@ module.exports = function bind(fn, thisArg) {
   };
 };
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1626,7 +1639,7 @@ module.exports = function buildURL(url, params, paramsSerializer) {
   return url;
 };
 
-},{"./../utils":38}],30:[function(require,module,exports){
+},{"./../utils":37}],29:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1642,7 +1655,7 @@ module.exports = function combineURLs(baseURL, relativeURL) {
     : baseURL;
 };
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1697,7 +1710,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":38}],32:[function(require,module,exports){
+},{"./../utils":37}],31:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1713,7 +1726,7 @@ module.exports = function isAbsoluteURL(url) {
   return /^([a-z][a-z\d\+\-\.]*:)?\/\//i.test(url);
 };
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1726,7 +1739,7 @@ module.exports = function isAxiosError(payload) {
   return (typeof payload === 'object') && (payload.isAxiosError === true);
 };
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1796,7 +1809,7 @@ module.exports = (
     })()
 );
 
-},{"./../utils":38}],35:[function(require,module,exports){
+},{"./../utils":37}],34:[function(require,module,exports){
 'use strict';
 
 var utils = require('../utils');
@@ -1810,7 +1823,7 @@ module.exports = function normalizeHeaderName(headers, normalizedName) {
   });
 };
 
-},{"../utils":38}],36:[function(require,module,exports){
+},{"../utils":37}],35:[function(require,module,exports){
 'use strict';
 
 var utils = require('./../utils');
@@ -1865,7 +1878,7 @@ module.exports = function parseHeaders(headers) {
   return parsed;
 };
 
-},{"./../utils":38}],37:[function(require,module,exports){
+},{"./../utils":37}],36:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1894,7 +1907,7 @@ module.exports = function spread(callback) {
   };
 };
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 'use strict';
 
 var bind = require('./helpers/bind');
@@ -2247,7 +2260,7 @@ module.exports = {
   stripBOM: stripBOM
 };
 
-},{"./helpers/bind":28}],39:[function(require,module,exports){
+},{"./helpers/bind":27}],38:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -2339,7 +2352,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react-dom.development.js
@@ -28605,7 +28618,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":39,"react":45,"scheduler":50,"scheduler/tracing":51}],41:[function(require,module,exports){
+},{"_process":1,"object-assign":38,"react":44,"scheduler":49,"scheduler/tracing":50}],40:[function(require,module,exports){
 /** @license React v17.0.1
  * react-dom.production.min.js
  *
@@ -28904,7 +28917,7 @@ exports.findDOMNode=function(a){if(null==a)return null;if(1===a.nodeType)return 
 exports.render=function(a,b,c){if(!rk(b))throw Error(y(200));return tk(null,a,b,!1,c)};exports.unmountComponentAtNode=function(a){if(!rk(a))throw Error(y(40));return a._reactRootContainer?(Xj(function(){tk(null,null,a,!1,function(){a._reactRootContainer=null;a[ff]=null})}),!0):!1};exports.unstable_batchedUpdates=Wj;exports.unstable_createPortal=function(a,b){return uk(a,b,2<arguments.length&&void 0!==arguments[2]?arguments[2]:null)};
 exports.unstable_renderSubtreeIntoContainer=function(a,b,c,d){if(!rk(c))throw Error(y(200));if(null==a||void 0===a._reactInternals)throw Error(y(38));return tk(a,b,c,!1,d)};exports.version="17.0.1";
 
-},{"object-assign":39,"react":45,"scheduler":50}],42:[function(require,module,exports){
+},{"object-assign":38,"react":44,"scheduler":49}],41:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -28946,7 +28959,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react-dom.development.js":40,"./cjs/react-dom.production.min.js":41,"_process":1}],43:[function(require,module,exports){
+},{"./cjs/react-dom.development.js":39,"./cjs/react-dom.production.min.js":40,"_process":1}],42:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v17.0.1
  * react.development.js
@@ -31283,7 +31296,7 @@ exports.version = ReactVersion;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1,"object-assign":39}],44:[function(require,module,exports){
+},{"_process":1,"object-assign":38}],43:[function(require,module,exports){
 /** @license React v17.0.1
  * react.production.min.js
  *
@@ -31308,7 +31321,7 @@ key:d,ref:k,props:e,_owner:h}};exports.createContext=function(a,b){void 0===b&&(
 exports.lazy=function(a){return{$$typeof:v,_payload:{_status:-1,_result:a},_init:Q}};exports.memo=function(a,b){return{$$typeof:u,type:a,compare:void 0===b?null:b}};exports.useCallback=function(a,b){return S().useCallback(a,b)};exports.useContext=function(a,b){return S().useContext(a,b)};exports.useDebugValue=function(){};exports.useEffect=function(a,b){return S().useEffect(a,b)};exports.useImperativeHandle=function(a,b,c){return S().useImperativeHandle(a,b,c)};
 exports.useLayoutEffect=function(a,b){return S().useLayoutEffect(a,b)};exports.useMemo=function(a,b){return S().useMemo(a,b)};exports.useReducer=function(a,b,c){return S().useReducer(a,b,c)};exports.useRef=function(a){return S().useRef(a)};exports.useState=function(a){return S().useState(a)};exports.version="17.0.1";
 
-},{"object-assign":39}],45:[function(require,module,exports){
+},{"object-assign":38}],44:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -31319,7 +31332,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/react.development.js":43,"./cjs/react.production.min.js":44,"_process":1}],46:[function(require,module,exports){
+},{"./cjs/react.development.js":42,"./cjs/react.production.min.js":43,"_process":1}],45:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler-tracing.development.js
@@ -31670,7 +31683,7 @@ exports.unstable_wrap = unstable_wrap;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],47:[function(require,module,exports){
+},{"_process":1}],46:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler-tracing.production.min.js
  *
@@ -31681,7 +31694,7 @@ exports.unstable_wrap = unstable_wrap;
  */
 'use strict';var b=0;exports.__interactionsRef=null;exports.__subscriberRef=null;exports.unstable_clear=function(a){return a()};exports.unstable_getCurrent=function(){return null};exports.unstable_getThreadID=function(){return++b};exports.unstable_subscribe=function(){};exports.unstable_trace=function(a,d,c){return c()};exports.unstable_unsubscribe=function(){};exports.unstable_wrap=function(a){return a};
 
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (process){(function (){
 /** @license React v0.20.1
  * scheduler.development.js
@@ -32529,7 +32542,7 @@ exports.unstable_wrapCallback = unstable_wrapCallback;
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":1}],49:[function(require,module,exports){
+},{"_process":1}],48:[function(require,module,exports){
 /** @license React v0.20.1
  * scheduler.production.min.js
  *
@@ -32551,7 +32564,7 @@ exports.unstable_next=function(a){switch(P){case 1:case 2:case 3:var b=3;break;d
 exports.unstable_scheduleCallback=function(a,b,c){var d=exports.unstable_now();"object"===typeof c&&null!==c?(c=c.delay,c="number"===typeof c&&0<c?d+c:d):c=d;switch(a){case 1:var e=-1;break;case 2:e=250;break;case 5:e=1073741823;break;case 4:e=1E4;break;default:e=5E3}e=c+e;a={id:N++,callback:b,priorityLevel:a,startTime:c,expirationTime:e,sortIndex:-1};c>d?(a.sortIndex=c,H(M,a),null===J(L)&&a===J(M)&&(S?h():S=!0,g(U,c-d))):(a.sortIndex=e,H(L,a),R||Q||(R=!0,f(V)));return a};
 exports.unstable_wrapCallback=function(a){var b=P;return function(){var c=P;P=b;try{return a.apply(this,arguments)}finally{P=c}}};
 
-},{}],50:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32562,7 +32575,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler.development.js":48,"./cjs/scheduler.production.min.js":49,"_process":1}],51:[function(require,module,exports){
+},{"./cjs/scheduler.development.js":47,"./cjs/scheduler.production.min.js":48,"_process":1}],50:[function(require,module,exports){
 (function (process){(function (){
 'use strict';
 
@@ -32573,4 +32586,4 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 }).call(this)}).call(this,require('_process'))
-},{"./cjs/scheduler-tracing.development.js":46,"./cjs/scheduler-tracing.production.min.js":47,"_process":1}]},{},[2]);
+},{"./cjs/scheduler-tracing.development.js":45,"./cjs/scheduler-tracing.production.min.js":46,"_process":1}]},{},[2]);

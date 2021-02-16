@@ -30,7 +30,7 @@ module.exports = class EventFrame extends React.Component {
     }
 
     setEventClass(){
-        const {event, session, index} = this.props;
+        const {event, session, index, focused} = this.props;
         const {selected} = this.state;
         let classes = "event-frame";
         if (selected){
@@ -38,6 +38,9 @@ module.exports = class EventFrame extends React.Component {
         }
         if (index == 0){
             classes = classes + " root";
+        }
+        if (focused){
+            classes = classes + " focused";
         }
         return classes;
     }

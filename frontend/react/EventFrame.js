@@ -11,6 +11,13 @@ module.exports = class EventFrame extends React.Component {
         this.state = {selected: false};
     }
 
+    componentDidUpdate(){
+        const {session} = this.props;
+        if (session.state.cancelSelection){
+            this.setState({selected: false});
+        }
+    }
+
     onClick(e){
         const {selected} = this.state;
         const {event, session} = this.props;

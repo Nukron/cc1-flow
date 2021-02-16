@@ -43,6 +43,7 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+//TODO: Refactor as part of the Event model
 router.post('/veto/:id', async (req, res) => {
     try {
         const MAX_VETOS = 3;

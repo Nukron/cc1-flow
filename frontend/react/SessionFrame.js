@@ -13,7 +13,8 @@ module.exports = class FlowSessionFrame extends React.Component {
         this.state = {
             session: null,
             events: [],
-            selectedEvents: []
+            selectedEvents: [],
+            cancelSelection: false
         };
     }
 
@@ -70,6 +71,7 @@ module.exports = class FlowSessionFrame extends React.Component {
     cancelSelection(){
         console.log("cancel all selections!");
         this.setState({selectedEvents: []})
+        this.setState({cancelSelection: true})
         //TODO: Propagate down to Events and make selected false
     }
 

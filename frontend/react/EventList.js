@@ -11,6 +11,13 @@ module.exports = class EventList extends React.Component {
         super(props);
     }
 
+    componentDidUpdate(){
+        const {session} = this.props;
+        if (session.state.cancelSelection){
+            session.setState({cancelSelection: false})
+        }
+    }
+
     render(){
         const {events, session} = this.props;
         return (

@@ -196,9 +196,6 @@ ReactDOM.render(
 },{"./react/SessionFrame":6,"react":45,"react-dom":42}],3:[function(require,module,exports){
 const React = require('react');
 const VetoButton = require('./buttons/VetoButton')
-//TODO: Design single Event 
-//TODO: Event interaction
-
 
 module.exports = class EventFrame extends React.Component {
 
@@ -210,7 +207,7 @@ module.exports = class EventFrame extends React.Component {
         const length = 200;
         const {event} = this.props;
         const content = event.content;
-        return content.length < 200 ? content : content.slice(0, length) + "...";
+        return content.length < length ? content : content.slice(0, length) + "...";
     }
 
     render(){
@@ -235,6 +232,13 @@ module.exports = class EventFrame extends React.Component {
     constructor(props) {
         super(props);
         this.state = {selected: false};
+    }
+
+    componentDidUpdate(){
+        const {session} = this.props;
+        if (session.state.cancelSelection){
+            this.setState({selected: false});
+        }
     }
 
     onClick(e){
@@ -298,6 +302,13 @@ module.exports = class EventList extends React.Component {
         super(props);
     }
 
+    componentDidUpdate(){
+        const {session} = this.props;
+        if (session.state.cancelSelection){
+            session.setState({cancelSelection: false})
+        }
+    }
+
     render(){
         const {events, session} = this.props;
         return (
@@ -327,7 +338,8 @@ module.exports = class FlowSessionFrame extends React.Component {
         this.state = {
             session: null,
             events: [],
-            selectedEvents: []
+            selectedEvents: [],
+            cancelSelection: false
         };
     }
 
@@ -384,6 +396,7 @@ module.exports = class FlowSessionFrame extends React.Component {
     cancelSelection(){
         console.log("cancel all selections!");
         this.setState({selectedEvents: []})
+        this.setState({cancelSelection: true})
         //TODO: Propagate down to Events and make selected false
     }
 
@@ -398,6 +411,7 @@ module.exports = class FlowSessionFrame extends React.Component {
                 React.createElement("section", {className: "flow-session"}, 
                      
                         selectedEvents.length > 0 ?
+                        //FIXME: Events only work on the "real" HTML-Elements
                         React.createElement("button", {onClick: () => {this.cancelSelection()}}, " Cancel Selection ")
                         : null, 
                     

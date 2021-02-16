@@ -224,8 +224,8 @@ module.exports = class EventFrame extends React.Component {
         const {expanded} = this.state;
         return ( 
             React.createElement("div", {className: "event-fragment", onClick: () => this.expandContract()}, 
-                React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " "), 
-                React.createElement("a", {href: "#event-" + event._id}, " Go to ")
+                React.createElement("a", {href: "#event-" + event._id}, " Go to "), 
+                React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " ")
             )
         )
     }
@@ -285,25 +285,50 @@ module.exports = class EventFrame extends React.Component {
         const {selected} = this.state;
         return (
             React.createElement("div", {id: "event-" + event._id, className: this.setEventClass(), "event-id": event._id, onClick: (e) => this.onClick(e)}, 
-                React.createElement("span", null, " ", event.degree, " "), 
-                React.createElement("span", null, " ", event.context, " "), 
-                React.createElement("span", null, " ", event.source_events.length, " "), 
+
+                React.createElement("div", {className: "related-events-control"}, 
                 
                     selected ?
-                    React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " source ")
-                    : null, 
-                
-                React.createElement("p", null, " ", event.content, " "), 
-                
-                    selected ?
-                    React.createElement("button", {onClick: () => session.vetoEvent(event._id)}, " Veto ")
+                    React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " ^^^ ")
                     : null, 
                 
                 
-                    event.veto_count > 0 ?
-                    React.createElement("p", null, " Vetos: ", event.veto_count, " ")
-                    : null, 
+                    event.source_events.length > 0 ?
+                    React.createElement("div", {className: "related-events-preview"}, 
+                        
+                            event.source_events.map( (event, index) => {
+                                return React.createElement("div", {key: "event-bubble-" + index, className: "event-bubble"}, " ")
+                            })
+                        
+                    )
+                    : null
                 
+                ), 
+                React.createElement("div", {className: "main-info"}, 
+                    React.createElement("div", {className: "context-info"}, 
+                        
+                            event.context == "main plot" ?
+                            React.createElement("span", {className: "degree"}, " ", event.degree, " ")
+                            : null, 
+                        
+                        React.createElement("span", {className: "context"}, " ", event.context, " ")
+                    ), 
+                    React.createElement("div", {className: "event-content"}, 
+                        React.createElement("p", null, " ", event.content, " ")
+                    )
+                ), 
+                React.createElement("div", {className: "veto-control"}, 
+                    
+                        selected ?
+                        React.createElement("button", {onClick: () => session.vetoEvent(event._id)}, " Veto ")
+                        : null, 
+                    
+                    
+                        event.veto_count > 0 ?
+                        React.createElement("p", null, " Vetos: ", event.veto_count, " ")
+                        : null
+                    
+                ), 
                 
                     selected ? 
                     React.createElement("div", {className: "creation-info"}, 
@@ -377,7 +402,7 @@ module.exports = class EventList extends React.Component {
                                     return React.createElement(EventFragment, {event: event, key: index})
                                 }), 
                             
-                            React.createElement("button", {onClick: () => this.resetView()}, " hide "), 
+                            React.createElement("button", {onClick: () => this.resetView()}, " vvv "), 
                             React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this, focused: true})
                         )
                         : React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this})

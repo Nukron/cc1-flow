@@ -50,25 +50,50 @@ module.exports = class EventFrame extends React.Component {
         const {selected} = this.state;
         return (
             <div id={"event-" + event._id} className={this.setEventClass()} event-id={event._id} onClick={(e) => this.onClick(e)}>
-                <span> {event.degree} </span>
-                <span> {event.context} </span>
-                <span> {event.source_events.length} </span>
+
+                <div className="related-events-control">
                 {
                     selected ?
-                    <button onClick={() => eventList.showRelatedEvents(event._id)}> source </button>
-                    : null
-                }
-                <p> {event.content} </p>
-                {
-                    selected ?
-                    <button onClick={() => session.vetoEvent(event._id)}> Veto </button>
+                    <button onClick={() => eventList.showRelatedEvents(event._id)}> ^^^ </button>
                     : null
                 }
                 {
-                    event.veto_count > 0 ?
-                    <p> Vetos: {event.veto_count} </p>
+                    event.source_events.length > 0 ?
+                    <div className="related-events-preview">
+                        {
+                            event.source_events.map( (event, index) => {
+                                return <div key={"event-bubble-" + index} className="event-bubble"> </div>
+                            })
+                        }
+                    </div>
                     : null
                 }
+                </div>
+                <div className="main-info">
+                    <div className="context-info">
+                        {
+                            event.context == "main plot" ?
+                            <span className="degree"> {event.degree} </span>
+                            : null
+                        }
+                        <span className="context"> {event.context} </span>
+                    </div>
+                    <div className="event-content">
+                        <p> {event.content} </p>
+                    </div>
+                </div>
+                <div className="veto-control">
+                    {
+                        selected ?
+                        <button onClick={() => session.vetoEvent(event._id)}> Veto </button>
+                        : null
+                    }
+                    {
+                        event.veto_count > 0 ?
+                        <p> Vetos: {event.veto_count} </p>
+                        : null
+                    }
+                </div>
                 {
                     selected ? 
                     <div className="creation-info">

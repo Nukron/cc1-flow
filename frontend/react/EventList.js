@@ -55,7 +55,7 @@ module.exports = class EventList extends React.Component {
                                     return <EventFragment event={event} key={index}/>
                                 })
                             }
-                            <button onClick={() => this.resetView()}> hide </button>
+                            <button onClick={() => this.resetView()}> vvv </button>
                             <EventFrame key={index} index={index} event={event} session={session} eventList={this} focused={true}/>
                         </div>
                         : <EventFrame key={index} index={index} event={event} session={session} eventList={this}/>

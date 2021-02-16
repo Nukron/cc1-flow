@@ -4,7 +4,8 @@ const EventList = require('./EventList');
 const CancelSelectionsButton = require('./buttons/CancelSelectionsButton');
 const NewEventForm = require('./prompts/NewEventForm');
 const RootEventNotice = require('./prompts/RootEventNotice');
-//TODO: Function for Root Event Prompt
+
+//TODO: Implement Climax?
 
 module.exports = class FlowSessionFrame extends React.Component {
 
@@ -14,12 +15,9 @@ module.exports = class FlowSessionFrame extends React.Component {
             session: null,
             events: [],
             selectedEvents: [],
-            cancelSelection: false
+            cancelSelection: false,
+            climax: 0
         };
-    }
-
-    componentDidUpdate(){
-
     }
 
     addEvent(event){

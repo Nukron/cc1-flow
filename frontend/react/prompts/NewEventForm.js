@@ -13,7 +13,7 @@ module.exports = class NewEventForm extends React.Component {
             degree: 1,
             content: "",
             author: "a_visitor",
-            context: "background"    
+            context: "background",
         };
     }
 

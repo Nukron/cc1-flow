@@ -70,7 +70,7 @@ module.exports = class NewEventForm extends React.Component {
                     <FlowCounter add_event={this} />
                     : null
                 }
-                <button onClick={() => this.createEvent()}> Create Event </button> 
+                <div className="button create" onClick={() => this.createEvent()}> Create Event </div> 
             </div>
         )
     }

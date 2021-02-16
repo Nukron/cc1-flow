@@ -84,7 +84,7 @@ module.exports = class FlowSessionFrame extends React.Component {
                     { 
                         selectedEvents.length > 0 ?
                         //FIXME: Events only work on the "real" HTML-Elements
-                        <button onClick={() => {this.cancelSelection()}}> Cancel Selection </button>
+                        <img onClick={() => this.cancelSelection()} className="cancel" src="./graphics/cancel.png"/>
                         : null
                     }
                     {

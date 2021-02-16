@@ -264,6 +264,14 @@ module.exports = class EventFrame extends React.Component {
         }
     }
 
+    renderVetos(count){
+        let vetos = [];
+        for(let i = 0; i < count; i++){
+            vetos.push(React.createElement("div", {className: "veto-bubble", key: "veto-" + i}));
+        }
+        return vetos;
+    }
+
     setEventClass(){
         const {event, session, index, focused} = this.props;
         const {selected} = this.state;
@@ -320,12 +328,17 @@ module.exports = class EventFrame extends React.Component {
                 React.createElement("div", {className: "veto-control"}, 
                     
                         selected ?
-                        React.createElement("button", {onClick: () => session.vetoEvent(event._id)}, " Veto ")
+                        React.createElement("div", {className: "button veto", onClick: () => session.vetoEvent(event._id)}, 
+                            React.createElement("svg", {id: "Bold", enableBackground: "new 0 0 24 24", height: "512", viewBox: "0 0 24 24", width: "512", xmlns: "http://www.w3.org/2000/svg"}, React.createElement("path", {d: "m22.25 1h-2.5c-.965 0-1.75.785-1.75 1.75v11.5c0 .965.785 1.75 1.75 1.75h2.5c.965 0 1.75-.785 1.75-1.75v-11.5c0-.965-.785-1.75-1.75-1.75z"}), React.createElement("path", {d: "m5.119.75c-1.95 0-3.61 1.4-3.94 3.32l-1.12 6.5c-.42 2.45 1.46 4.68 3.94 4.68h4.72s-.75 1.5-.75 4c0 3 2.25 4 3.25 4s1.5-.5 1.5-3c0-2.376 2.301-4.288 3.781-5.273v-12.388c-1.601-.741-4.806-1.839-9.781-1.839z"})), 
+                            React.createElement("span", null, " Veto ")
+                        )
                         : null, 
                     
                     
                         event.veto_count > 0 ?
-                        React.createElement("p", null, " Vetos: ", event.veto_count, " ")
+                        React.createElement("div", {className: "veto-count"}, 
+                            this.renderVetos(event.veto_count)
+                        )
                         : null
                     
                 ), 
@@ -502,7 +515,7 @@ module.exports = class FlowSessionFrame extends React.Component {
                      
                         selectedEvents.length > 0 ?
                         //FIXME: Events only work on the "real" HTML-Elements
-                        React.createElement("button", {onClick: () => {this.cancelSelection()}}, " Cancel Selection ")
+                        React.createElement("img", {onClick: () => this.cancelSelection(), className: "cancel", src: "./graphics/cancel.png"})
                         : null, 
                     
                     
@@ -670,7 +683,7 @@ module.exports = class NewEventForm extends React.Component {
                     React.createElement(FlowCounter, {add_event: this})
                     : null, 
                 
-                React.createElement("button", {onClick: () => this.createEvent()}, " Create Event ")
+                React.createElement("div", {className: "button create", onClick: () => this.createEvent()}, " Create Event ")
             )
         )
     }

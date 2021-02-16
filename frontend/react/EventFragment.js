@@ -1,10 +1,10 @@
 const React = require('react');
-const VetoButton = require('./buttons/VetoButton')
 
 module.exports = class EventFrame extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {expanded: false};
     }
 
     previewContent(){
@@ -14,10 +14,22 @@ module.exports = class EventFrame extends React.Component {
         return content.length < length ? content : content.slice(0, length) + "...";
     }
 
+    expandContract(){
+        const {expanded} = this.state;
+        if (expanded){
+            this.setState({expanded: false});
+        } else {
+            this.setState({expanded: true});
+        }
+    }
+
     render(){
+        const {event} = this.props;
+        const {expanded} = this.state;
         return ( 
-            <div>
-                <p> {this.previewContent()} </p>
+            <div className="event-fragment" onClick={() => this.expandContract()}>
+                <p> {expanded ? event.content : this.previewContent()} </p>
+                <a href={"#event-" + event._id}> Go to </a>
             </div>
         )
     }

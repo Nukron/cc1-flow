@@ -201,6 +201,7 @@ module.exports = class EventFrame extends React.Component {
 
     constructor(props) {
         super(props);
+        this.state = {expanded: false};
     }
 
     previewContent(){
@@ -210,10 +211,22 @@ module.exports = class EventFrame extends React.Component {
         return content.length < length ? content : content.slice(0, length) + "...";
     }
 
+    expandContract(){
+        const {expanded} = this.state;
+        if (expanded){
+            this.setState({expanded: false});
+        } else {
+            this.setState({expanded: true});
+        }
+    }
+
     render(){
+        const {event} = this.props;
+        const {expanded} = this.state;
         return ( 
-            React.createElement("div", null, 
-                React.createElement("p", null, " ", this.previewContent(), " ")
+            React.createElement("div", {onClick: () => this.expandContract()}, 
+                React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " "), 
+                React.createElement("a", {href: "#event-" + event._id}, " Go to ")
             )
         )
     }
@@ -222,7 +235,6 @@ module.exports = class EventFrame extends React.Component {
 
 },{"./buttons/VetoButton":8,"react":45}],4:[function(require,module,exports){
 const React = require('react');
-const VetoButton = require('./buttons/VetoButton')
 //TODO: Design single Event 
 //TODO: Event interaction
 
@@ -267,10 +279,15 @@ module.exports = class EventFrame extends React.Component {
     }
 
     render(){
-        const {event, session} = this.props;
+        const {event, session, eventList} = this.props;
         const {selected} = this.state;
         return (
-            React.createElement("div", {className: this.setEventClass(), "event-id": event._id, onClick: (e) => this.onClick(e)}, 
+            React.createElement("div", {id: "event-" + event._id, className: this.setEventClass(), "event-id": event._id, onClick: (e) => this.onClick(e)}, 
+                
+                    selected ?
+                    React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " source ")
+                    : null, 
+                
                 React.createElement("p", null, " ", event.content, " "), 
                 
                     selected ?
@@ -288,7 +305,7 @@ module.exports = class EventFrame extends React.Component {
 
 }
 
-},{"./buttons/VetoButton":8,"react":45}],5:[function(require,module,exports){
+},{"react":45}],5:[function(require,module,exports){
 const React = require('react');
 const EventFrame = require('./EventFrame');
 
@@ -314,7 +331,7 @@ module.exports = class EventList extends React.Component {
         return (
             React.createElement("div", {className: "eventList"}, 
                 events.map( (event, index) => {
-                    return React.createElement(EventFrame, {key: index, index: index, event: event, session: session})
+                    return React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this})
                 })
             )
         )
@@ -329,7 +346,8 @@ const EventList = require('./EventList');
 const CancelSelectionsButton = require('./buttons/CancelSelectionsButton');
 const NewEventForm = require('./prompts/NewEventForm');
 const RootEventNotice = require('./prompts/RootEventNotice');
-//TODO: Function for Root Event Prompt
+
+//TODO: Implement Climax?
 
 module.exports = class FlowSessionFrame extends React.Component {
 
@@ -339,12 +357,9 @@ module.exports = class FlowSessionFrame extends React.Component {
             session: null,
             events: [],
             selectedEvents: [],
-            cancelSelection: false
+            cancelSelection: false,
+            climax: 0
         };
-    }
-
-    componentDidUpdate(){
-
     }
 
     addEvent(event){
@@ -547,7 +562,7 @@ module.exports = class NewEventForm extends React.Component {
             degree: 1,
             content: "",
             author: "a_visitor",
-            context: "background"    
+            context: "background",
         };
     }
 

@@ -23,7 +23,7 @@ module.exports = class EventList extends React.Component {
         return (
             <div className="eventList">
                 {events.map( (event, index) => {
-                    return <EventFrame key={index} index={index} event={event} session={session}/>
+                    return <EventFrame key={index} index={index} event={event} session={session} eventList={this}/>
                 })}
             </div>
         )

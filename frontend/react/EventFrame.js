@@ -1,5 +1,4 @@
 const React = require('react');
-const VetoButton = require('./buttons/VetoButton')
 //TODO: Design single Event 
 //TODO: Event interaction
 
@@ -44,10 +43,15 @@ module.exports = class EventFrame extends React.Component {
     }
 
     render(){
-        const {event, session} = this.props;
+        const {event, session, eventList} = this.props;
         const {selected} = this.state;
         return (
-            <div className={this.setEventClass()} event-id={event._id} onClick={(e) => this.onClick(e)}>
+            <div id={"event-" + event._id} className={this.setEventClass()} event-id={event._id} onClick={(e) => this.onClick(e)}>
+                {
+                    selected ?
+                    <button onClick={() => eventList.showRelatedEvents(event._id)}> source </button>
+                    : null
+                }
                 <p> {event.content} </p>
                 {
                     selected ?

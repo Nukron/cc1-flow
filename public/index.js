@@ -224,7 +224,7 @@ module.exports = class EventFrame extends React.Component {
         const {expanded} = this.state;
         return ( 
             React.createElement("div", {className: "event-fragment", onClick: () => this.expandContract()}, 
-                React.createElement("a", {href: "#event-" + event._id}, " Go to "), 
+                React.createElement("a", {className: "jump-to-event", href: "#event-" + event._id}, " ^^^ "), 
                 React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " ")
             )
         )
@@ -288,7 +288,7 @@ module.exports = class EventFrame extends React.Component {
 
                 React.createElement("div", {className: "related-events-control"}, 
                 
-                    selected ?
+                    selected && event.source_events.length > 0 ?
                     React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " ^^^ ")
                     : null, 
                 

@@ -28,7 +28,7 @@ module.exports = class EventFrame extends React.Component {
         const {expanded} = this.state;
         return ( 
             <div className="event-fragment" onClick={() => this.expandContract()}>
-                <a href={"#event-" + event._id}> Go to </a>
+                <a className="jump-to-event" href={"#event-" + event._id}> ^^^ </a>
                 <p> {expanded ? event.content : this.previewContent()} </p>
             </div>
         )

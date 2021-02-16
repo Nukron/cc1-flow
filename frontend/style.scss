@@ -1,9 +1,12 @@
+
 header {
+    padding: 2rem 0;
     width: 100%;
+    position: sticky;
     text-align: center;
 
     .logo {
-        width: 100px;
+        width: 200px;
     }
 }
 
@@ -137,6 +140,15 @@ header {
         margin-bottom: 2rem;
         background-color: rgb(67, 88, 80);
         border-radius: 20px;
+
+        .jump-to-event {
+            display: inline-block;
+            padding: 0.5rem;
+            background-color: orangered;
+            text-decoration: none;
+            color: white;
+        }
+
     }
 
     .add-event-form {

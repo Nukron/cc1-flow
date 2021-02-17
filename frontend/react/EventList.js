@@ -61,7 +61,7 @@ module.exports = class EventList extends React.Component {
                                     )
                                 })
                             }
-                            <button onClick={() => this.resetView()}> vvv </button>
+                            <div className="hide-related-events" onClick={() => this.resetView()}> hide <br/> vv </div>
                             <EventFrame key={index} index={index} event={event} session={session} eventList={this} focused={true}/>
                         </div>
                         : <div className="event-container" key={index}>

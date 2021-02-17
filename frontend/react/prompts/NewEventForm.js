@@ -69,22 +69,22 @@ module.exports = class NewEventForm extends React.Component {
                 <div className="content">
                     <p> What happens next? </p>
                     <textarea name="content" onChange={(react) => this.setContent(react.target.value)}/>
-                </div>
-                <div className="context-switch">
+                    <div className="context-switch">
+                        {
+                            root_event ?
+                            ["background", "character", "main plot"].map(context => {
+                                return <button className={this.state.context == context ? "active" : null} key={"context-switch-" + context} onClick={() => this.setContext(context)}> {context} </button>
+                            })
+                            : null
+                        }
+                    </div>
                     {
-                        root_event ?
-                        ["background", "character", "main plot"].map(context => {
-                            return <button className={this.state.context == context ? "active" : null} key={"context-switch-" + context} onClick={() => this.setContext(context)}> {context} </button>
-                        })
+                        this.state.context == "main plot" ?
+                        <FlowCounter add_event={this} />
                         : null
                     }
+                    <div className="button create" onClick={() => this.createEvent()}> Create Event </div> 
                 </div>
-                {
-                    this.state.context == "main plot" ?
-                    <FlowCounter add_event={this} />
-                    : null
-                }
-                <div className="button create" onClick={() => this.createEvent()}> Create Event </div> 
             </div>
         )
     }

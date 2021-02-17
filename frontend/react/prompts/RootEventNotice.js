@@ -18,8 +18,9 @@ module.exports = class RootEventNotice extends React.Component {
     render(){
 
         return (
-            <div className="notice">
-                <p> There is no origin event yet. Please add the first event to begin the Flow! </p>
+            <div id="missing-root" className="notice">
+                <p> There is no origin event yet. <br/>
+                Add the first event to begin the Flow! </p>
             </div>
         )
     }

@@ -81,12 +81,6 @@ module.exports = class FlowSessionFrame extends React.Component {
         return (
             session ? 
                 <section className="flow-session">
-                    { 
-                        selectedEvents.length > 0 ?
-                        //FIXME: Events only work on the "real" HTML-Elements
-                        <img onClick={() => this.cancelSelection()} className="cancel" src="./graphics/cancel.png"/>
-                        : null
-                    }
                     {
                         session.root_event ? 
                         null 
@@ -102,11 +96,19 @@ module.exports = class FlowSessionFrame extends React.Component {
                         <EventList session={this} events={this.state.events}/>
                         : null
                     }
+                    <footer>
+                    { 
+                        selectedEvents.length > 0 ?
+                        //FIXME: Events only work on the "real" HTML-Elements
+                        <img onClick={() => this.cancelSelection()} className="cancel" src="./graphics/cancel.png"/>
+                        : null
+                    }
                     {
                         selectedEvents.length > 0 ?
                         <NewEventForm selected={selectedEvents} session={this}/>
                         : null
                     }
+                    </footer>
                 </section> 
                 : null
         )

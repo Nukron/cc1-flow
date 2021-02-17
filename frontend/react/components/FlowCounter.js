@@ -21,18 +21,29 @@ module.exports = class FlowCounter extends React.Component {
         add_event.setDegree(n);
     }
 
+    renderFlowUnits(n){
+        const {units} = this.state;
+        const unitElements = [];
+        for(let i = 0; i < units; i++){
+            unitElements.push(<div className={"unit" + (units - n > i ? " active" : " spent")} key={i}> </div>)
+        }
+        return unitElements
+    }
+
     render(){
-        const {units, degree} = this.state;
+        const {degree} = this.state;
         return (
             <div id="flow-control" className="flow-counter">
                 <div className="flow-degree-selection">
                     {
                         [1, 2, 4].map(n => {
-                           return <button className={n <= degree ? "active" : null} key={"degree-" + n} onClick={() => this.setDegree(n)}> {n} </button>
+                           return <div className={n <= degree ? "active" + " degree-" + n : null} key={"degree-" + n} onClick={() => this.setDegree(n)}> {n} </div>
                         })
                     }
                 </div>
-                <p><span className="label"> Flow Units: </span> {units - degree} </p>
+                <div className="units-counter">
+                    {this.renderFlowUnits(degree)}
+                </div>
             </div>
         )
     }

@@ -32,9 +32,30 @@ footer a {
   text-align: center;
 }
 
+.flow-session header, .flow-session footer {
+  z-index: 2;
+  position: -webkit-sticky;
+  position: sticky;
+  padding: 1rem 0;
+  margin: 0;
+  background-color: transparent;
+}
+
 .flow-session .cancel {
   width: 30px;
   height: 30px;
+}
+
+.flow-session #missing-root {
+  background: -webkit-gradient(linear, left top, left bottom, from(#3885a3), to(rgba(255, 255, 255, 0)));
+  background: linear-gradient(180deg, #3885a3 0%, rgba(255, 255, 255, 0) 100%);
+  padding: 2rem;
+}
+
+.flow-session .notice {
+  font-weight: bolder;
+  font-size: 1.6rem;
+  color: white;
 }
 
 .flow-session .event-list {
@@ -66,6 +87,18 @@ footer a {
       -ms-flex-align: center;
           align-items: center;
   width: 100%;
+}
+
+.flow-session .event-list .hide-related-events {
+  background: -webkit-gradient(linear, left bottom, left top, from(#646472), color-stop(80%, rgba(255, 255, 255, 0)));
+  background: linear-gradient(0deg, #646472 0%, rgba(255, 255, 255, 0) 80%);
+  position: relative;
+  top: 20px;
+  width: 85%;
+  padding: 2rem;
+  color: #646472;
+  text-transform: uppercase;
+  font-size: 0.8rem;
 }
 
 .flow-session .button {
@@ -132,6 +165,7 @@ footer a {
   display: -ms-flexbox;
   display: flex;
   width: 90%;
+  z-index: 1;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
@@ -154,12 +188,12 @@ footer a {
 }
 
 .flow-session .event-frame.selected {
-  background-color: #486b94;
+  background-color: #3885a3;
   color: white;
 }
 
 .flow-session .event-frame.focused {
-  border: solid 4px #486b94;
+  border: solid 4px #3885a3;
 }
 
 .flow-session .event-frame .related-events-control {
@@ -173,6 +207,14 @@ footer a {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+}
+
+.flow-session .event-frame .related-events-control .show-related-events {
+  width: 99%;
+  padding: 0.2rem;
+  background-color: #347c98;
+  border-radius: 10px 10px 0 0;
+  color: white;
 }
 
 .flow-session .event-frame .related-events-control .related-events-preview {
@@ -320,7 +362,7 @@ footer a {
           justify-content: flex-end;
   padding: 0.2rem;
   background-color: white;
-  color: #486b94;
+  color: #3885a3;
   border-radius: 10px;
 }
 
@@ -338,20 +380,28 @@ footer a {
           flex-direction: column;
   width: 100%;
   max-width: 12rem;
-  padding: 2rem;
   margin: 1rem;
   margin-bottom: 2rem;
-  background-color: #4a5261;
+  background-color: #646472;
   color: white;
   border-radius: 20px;
+  -webkit-box-shadow: #bec3c9 2px 2px 10px;
+          box-shadow: #bec3c9 2px 2px 10px;
+}
+
+.flow-session .event-fragment p {
+  margin: 1rem;
 }
 
 .flow-session .event-fragment .jump-to-event {
   display: inline-block;
   padding: 0.5rem;
-  background-color: orangered;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  background-color: white;
   text-decoration: none;
-  color: white;
+  border-radius: 20px 20px 0 0;
+  color: #646472;
 }
 
 .flow-session .add-event-form {
@@ -365,33 +415,157 @@ footer a {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  background: -webkit-gradient(linear, left bottom, left top, from(rgba(230, 232, 235, 0)), color-stop(20%, #85bfd5), to(rgba(255, 255, 255, 0)));
+  background: linear-gradient(0deg, rgba(230, 232, 235, 0) 0%, #85bfd5 20%, rgba(255, 255, 255, 0) 100%);
   width: 100%;
 }
 
+.flow-session .add-event-form .context-switch {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: start;
+      -ms-flex-align: start;
+          align-items: flex-start;
+}
+
 .flow-session .add-event-form .context-switch button {
-  background-color: lightgray;
-  color: gray;
+  color: #3885a3;
+  background-color: white;
+  border: none;
+  border-radius: 5px;
+  margin: 0 3px;
+  padding: 0.5rem;
+  outline: none;
 }
 
 .flow-session .add-event-form .context-switch button.active {
-  background-color: darkgray;
+  background-color: orangered;
   color: white;
+  font-size: 1.3rem;
 }
 
 .flow-session .add-event-form .content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
   width: 90%;
+  padding: 1rem;
+  background-color: #3885a3;
+  border-radius: 35px;
+  -webkit-box-shadow: #bec3c9 2px 2px 10px;
+          box-shadow: #bec3c9 2px 2px 10px;
 }
 
 .flow-session .add-event-form .content textarea {
   border-radius: 10px;
+  font-size: 1rem;
+  padding: 0.5rem;
+  outline: white;
   font-family: "Rubik";
-  border: solid 1px #486b94;
+  border: solid 1px #3885a3;
   width: 80%;
   height: 100px;
 }
 
-.flow-session .flow-counter button.active {
+.flow-session .add-event-form .content p {
+  color: white;
+  font-size: 1.5rem;
+}
+
+.flow-session .add-event-form .content .button {
+  border: solid 1px white;
+  color: white;
+}
+
+.flow-session .flow-counter {
+  margin: 1rem 0;
+}
+
+.flow-session .flow-counter .flow-degree-selection {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin: 1rem 0;
+}
+
+.flow-session .flow-counter .flow-degree-selection div {
+  margin: 0 5px;
+  padding: 0.3rem 0.5rem;
+  background-color: gray;
+  color: white;
+  font-size: 0.5rem;
+  border-radius: 50px;
+}
+
+.flow-session .flow-counter .flow-degree-selection div.active {
   background-color: orangered;
   color: white;
   font-weight: bolder;
+}
+
+.flow-session .flow-counter .flow-degree-selection div.active.degree-1 {
+  font-size: 0.6rem;
+  padding: 0.5rem 0.8rem;
+}
+
+.flow-session .flow-counter .flow-degree-selection div.active.degree-2 {
+  font-size: 1rem;
+  padding: 0.5rem 0.8rem;
+}
+
+.flow-session .flow-counter .flow-degree-selection div.active.degree-4 {
+  font-size: 1.5rem;
+  padding: 0.5rem 0.8rem;
+}
+
+.flow-session .flow-counter .units-counter {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.flow-session .flow-counter .units-counter .unit {
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  background-color: white;
+  border-radius: 20px;
+}
+
+.flow-session .flow-counter .units-counter .unit.spent {
+  width: 4px;
+  height: 4px;
+  background-color: gray;
 }

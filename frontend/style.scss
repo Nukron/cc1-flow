@@ -2,6 +2,12 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Oxygen:wght@300;700&family=Rubik:wght@300;400;500&display=swap');
 
+
+$color-flow-main: rgb(56, 133, 163);
+$color-flow-main2: orangered;
+$color-flow-main3: rgb(100, 100, 114);
+$color-flow-dark: rgb(31, 38, 46);
+
 body {
     font-family: "Rubik";
     padding: 0;
@@ -22,7 +28,7 @@ header {
 footer {
     padding: 2rem;
     margin-top: 8rem;
-    background-color: rgb(31, 38, 46);
+    background-color: $color-flow-dark;
     color: white;
 
     a {
@@ -32,11 +38,30 @@ footer {
 
 .flow-session {
     
+    header,footer {
+        z-index: 2;
+        position: sticky;
+        padding: 1rem 0;
+        margin: 0;
+        background-color: transparent;
+    }
+
     text-align: center;
 
     .cancel {
         width: 30px;
         height: 30px;
+    }
+
+    #missing-root {
+        background: linear-gradient(180deg, $color-flow-main 0%, rgba(255, 255, 255, 0) 100%);
+        padding: 2rem;
+    }
+
+    .notice {
+        font-weight: bolder;
+        font-size: 1.6rem;
+        color: white;
     }
 
     .event-list {
@@ -51,6 +76,17 @@ footer {
             justify-content: center;
             align-items: center;
             width: 100%;
+        }
+
+        .hide-related-events {
+            background: linear-gradient(0deg, $color-flow-main3 0%, rgba(255, 255, 255, 0) 80%);
+            position:relative;
+            top: 20px;
+            width: 85%;
+            padding: 2rem;
+            color: $color-flow-main3;
+            text-transform: uppercase;
+            font-size: 0.8rem;
         }
     }
 
@@ -110,6 +146,7 @@ footer {
     .event-frame{
         display: flex;
         width: 90%;
+        z-index: 1;
         flex-direction: column;
         flex-grow: 4;
         padding: 0rem;
@@ -120,17 +157,17 @@ footer {
 
         &.root {
             width: 100%;
-            background-color: rgb(31, 38, 46);
+            background-color: $color-flow-dark;
             color: white;
         }
 
         &.selected {
-            background-color: rgb(72, 107, 148);
+            background-color: $color-flow-main;
             color: white;
         }
 
         &.focused {
-            border: solid 4px rgb(72, 107, 148);
+            border: solid 4px $color-flow-main;
         }
 
         .related-events-control{
@@ -138,6 +175,14 @@ footer {
             display:flex;
             flex-direction: column;
             align-items: center;
+
+            .show-related-events {
+                width: 99%;
+                padding: 0.2rem;
+                background-color: darken($color-flow-main, 3);
+                border-radius: 10px 10px 0 0;
+                color: white;
+            }
 
             .related-events-preview {
                 display: flex;
@@ -197,7 +242,7 @@ footer {
                     top: 10px;
                     padding: 0.3rem 0.6rem;
                     border-radius: 50px;
-                    background-color: orangered;
+                    background-color: $color-flow-main2;
                     color: white;
                 }
                 .context {
@@ -233,7 +278,7 @@ footer {
             justify-content: flex-end;
             padding: 0.2rem;
             background-color: white;
-            color: rgb(72, 107, 148);
+            color: $color-flow-main;
             border-radius: 10px;
             span {
                 margin-right: 1rem;
@@ -248,19 +293,26 @@ footer {
         flex-direction: column;
         width: 100%;
         max-width: 12rem;
-        padding: 2rem;
         margin: 1rem;
         margin-bottom: 2rem;
-        background-color: rgb(74, 82, 97);
+        background-color: $color-flow-main3;
         color: white;
         border-radius: 20px;
+        box-shadow: rgb(190, 195, 201) 2px 2px 10px;
+
+        p {
+            margin: 1rem;
+        }
 
         .jump-to-event {
             display: inline-block;
             padding: 0.5rem;
-            background-color: orangered;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            background-color: white;
             text-decoration: none;
-            color: white;
+            border-radius: 20px 20px 0 0;
+            color: $color-flow-main3;
         }
 
     }
@@ -269,39 +321,117 @@ footer {
         display: flex;
         flex-direction: column;
         align-items: center;
+        background: linear-gradient(0deg, rgba(230, 232, 235, 0) 0%, lighten($color-flow-main, 25) 20%, rgba(255, 255, 255, 0) 100%);
         width: 100%;
 
         .context-switch  {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
             button {
-                background-color: lightgray;
-                color: gray;
-
+                color: $color-flow-main;
+                background-color: white;
+                border: none;
+                border-radius: 5px;
+                margin: 0 3px;
+                padding: 0.5rem;
+                outline: none;
                 &.active {
-                    background-color: darkgray;
+                    background-color: $color-flow-main2;
                     color: white;
+                    font-size: 1.3rem;
                 }
             }
         }
 
         .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 90%;
+            padding: 1rem;
+            background-color: $color-flow-main;
+            border-radius: 35px;
+            box-shadow: rgb(190, 195, 201) 2px 2px 10px;
             textarea {
                 border-radius: 10px;
+                font-size: 1rem;
+                padding: 0.5rem;
+                outline: white;
                 font-family: "Rubik";
-                border: solid 1px rgb(72, 107, 148);
+                border: solid 1px $color-flow-main;
                 width: 80%;
                 height: 100px;
+            }
+            p {
+                color: white;
+                font-size: 1.5rem;
+            }
+            .button {
+                border: solid 1px white;
+                color: white;
             }
         }
     }
 
     .flow-counter {
-        button {
-            &.active {
-                background-color: orangered;
+        margin: 1rem 0; 
+        .flow-degree-selection {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            div {
+                margin: 0 5px;
+                padding: 0.3rem 0.5rem;
+                background-color: gray;
                 color: white;
-                font-weight: bolder;
+                font-size: 0.5rem;
+                border-radius: 50px;
+                &.active {
+                    background-color: $color-flow-main2;
+                    color: white;
+                    font-weight: bolder;
+
+                    &.degree-1 {
+                        font-size: 0.6rem;
+                        padding: 0.5rem 0.8rem;
+                    }
+
+                    &.degree-2 {
+                        font-size: 1rem;
+                        padding: 0.5rem 0.8rem;
+                    }
+
+                    &.degree-4 {
+                        font-size: 1.5rem;
+                        padding: 0.5rem 0.8rem;
+                    }
+                }
             }
+        }
+
+        .units-counter {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            .unit {
+                width: 8px;
+                height: 8px;
+                margin: 0 2px;
+                background-color: white;
+                border-radius: 20px;
+
+                &.spent {
+                    width: 4px;
+                    height: 4px;
+                    background-color: gray;
+                }
+            }
+
         }
     }
 

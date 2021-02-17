@@ -61,7 +61,7 @@ module.exports = class EventFrame extends React.Component {
                     <div className="related-events-control">
                     {
                         selected && event.source_events.length > 0 ?
-                        <button onClick={() => eventList.showRelatedEvents(event._id)}> ^^^ </button>
+                        <div className="show-related-events" onClick={() => eventList.showRelatedEvents(event._id)}> ^^ </div>
                         : null
                     }
                     {

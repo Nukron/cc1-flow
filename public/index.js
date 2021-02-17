@@ -224,7 +224,7 @@ module.exports = class EventFrame extends React.Component {
         const {expanded} = this.state;
         return ( 
             React.createElement("div", {className: "event-fragment", onClick: () => this.expandContract()}, 
-                React.createElement("a", {className: "jump-to-event", href: "#event-" + event._id}, " ^^^ "), 
+                React.createElement("a", {className: "jump-to-event", href: "#event-" + event._id}, " ^^ ", React.createElement("br", null), " go to event "), 
                 React.createElement("p", null, " ", expanded ? event.content : this.previewContent(), " ")
             )
         )
@@ -296,7 +296,7 @@ module.exports = class EventFrame extends React.Component {
                     React.createElement("div", {className: "related-events-control"}, 
                     
                         selected && event.source_events.length > 0 ?
-                        React.createElement("button", {onClick: () => eventList.showRelatedEvents(event._id)}, " ^^^ ")
+                        React.createElement("div", {className: "show-related-events", onClick: () => eventList.showRelatedEvents(event._id)}, " ^^ ")
                         : null, 
                     
                     
@@ -421,7 +421,7 @@ module.exports = class EventList extends React.Component {
                                     )
                                 }), 
                             
-                            React.createElement("button", {onClick: () => this.resetView()}, " vvv "), 
+                            React.createElement("div", {className: "hide-related-events", onClick: () => this.resetView()}, " hide ", React.createElement("br", null), " vv "), 
                             React.createElement(EventFrame, {key: index, index: index, event: event, session: session, eventList: this, focused: true})
                         )
                         : React.createElement("div", {className: "event-container", key: index}, 
@@ -525,12 +525,6 @@ module.exports = class FlowSessionFrame extends React.Component {
         return (
             session ? 
                 React.createElement("section", {className: "flow-session"}, 
-                     
-                        selectedEvents.length > 0 ?
-                        //FIXME: Events only work on the "real" HTML-Elements
-                        React.createElement("img", {onClick: () => this.cancelSelection(), className: "cancel", src: "./graphics/cancel.png"})
-                        : null, 
-                    
                     
                         session.root_event ? 
                         null 
@@ -546,11 +540,19 @@ module.exports = class FlowSessionFrame extends React.Component {
                         React.createElement(EventList, {session: this, events: this.state.events})
                         : null, 
                     
+                    React.createElement("footer", null, 
+                     
+                        selectedEvents.length > 0 ?
+                        //FIXME: Events only work on the "real" HTML-Elements
+                        React.createElement("img", {onClick: () => this.cancelSelection(), className: "cancel", src: "./graphics/cancel.png"})
+                        : null, 
+                    
                     
                         selectedEvents.length > 0 ?
                         React.createElement(NewEventForm, {selected: selectedEvents, session: this})
                         : null
                     
+                    )
                 ) 
                 : null
         )
@@ -624,18 +626,29 @@ module.exports = class FlowCounter extends React.Component {
         add_event.setDegree(n);
     }
 
+    renderFlowUnits(n){
+        const {units} = this.state;
+        const unitElements = [];
+        for(let i = 0; i < units; i++){
+            unitElements.push(React.createElement("div", {className: "unit" + (units - n > i ? " active" : " spent"), key: i}, " "))
+        }
+        return unitElements
+    }
+
     render(){
-        const {units, degree} = this.state;
+        const {degree} = this.state;
         return (
             React.createElement("div", {id: "flow-control", className: "flow-counter"}, 
                 React.createElement("div", {className: "flow-degree-selection"}, 
                     
                         [1, 2, 4].map(n => {
-                           return React.createElement("button", {className: n <= degree ? "active" : null, key: "degree-" + n, onClick: () => this.setDegree(n)}, " ", n, " ")
+                           return React.createElement("div", {className: n <= degree ? "active" + " degree-" + n : null, key: "degree-" + n, onClick: () => this.setDegree(n)}, " ", n, " ")
                         })
                     
                 ), 
-                React.createElement("p", null, React.createElement("span", {className: "label"}, " Flow Units: "), " ", units - degree, " ")
+                React.createElement("div", {className: "units-counter"}, 
+                    this.renderFlowUnits(degree)
+                )
             )
         )
     }
@@ -713,23 +726,23 @@ module.exports = class NewEventForm extends React.Component {
                 
                 React.createElement("div", {className: "content"}, 
                     React.createElement("p", null, " What happens next? "), 
-                    React.createElement("textarea", {name: "content", onChange: (react) => this.setContent(react.target.value)})
-                ), 
-                React.createElement("div", {className: "context-switch"}, 
+                    React.createElement("textarea", {name: "content", onChange: (react) => this.setContent(react.target.value)}), 
+                    React.createElement("div", {className: "context-switch"}, 
+                        
+                            root_event ?
+                            ["background", "character", "main plot"].map(context => {
+                                return React.createElement("button", {className: this.state.context == context ? "active" : null, key: "context-switch-" + context, onClick: () => this.setContext(context)}, " ", context, " ")
+                            })
+                            : null
+                        
+                    ), 
                     
-                        root_event ?
-                        ["background", "character", "main plot"].map(context => {
-                            return React.createElement("button", {className: this.state.context == context ? "active" : null, key: "context-switch-" + context, onClick: () => this.setContext(context)}, " ", context, " ")
-                        })
-                        : null
+                        this.state.context == "main plot" ?
+                        React.createElement(FlowCounter, {add_event: this})
+                        : null, 
                     
-                ), 
-                
-                    this.state.context == "main plot" ?
-                    React.createElement(FlowCounter, {add_event: this})
-                    : null, 
-                
-                React.createElement("div", {className: "button create", onClick: () => this.createEvent()}, " Create Event ")
+                    React.createElement("div", {className: "button create", onClick: () => this.createEvent()}, " Create Event ")
+                )
             )
         )
     }
@@ -757,8 +770,9 @@ module.exports = class RootEventNotice extends React.Component {
     render(){
 
         return (
-            React.createElement("div", {className: "notice"}, 
-                React.createElement("p", null, " There is no origin event yet. Please add the first event to begin the Flow! ")
+            React.createElement("div", {id: "missing-root", className: "notice"}, 
+                React.createElement("p", null, " There is no origin event yet. ", React.createElement("br", null), 
+                "Add the first event to begin the Flow! ")
             )
         )
     }

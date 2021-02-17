@@ -1,6 +1,7 @@
 const React = require('react');
 const EventFrame = require('./EventFrame');
 const EventFragment = require('./EventFragment');
+const FlowConnector = require('./components/FlowConnector');
 
 //TODO: Design Event Chronology
 
@@ -52,13 +53,25 @@ module.exports = class EventList extends React.Component {
                         <div className="show-related-events">
                             {
                                 relatedEvents.map( (event, index) => {
-                                    return <EventFragment event={event} key={index}/>
+                                    return (
+                                        <div className="event-container" key={index}>
+                                            <EventFragment event={event} />
+                                            <FlowConnector degree={1}/>
+                                        </div>
+                                    )
                                 })
                             }
                             <button onClick={() => this.resetView()}> vvv </button>
                             <EventFrame key={index} index={index} event={event} session={session} eventList={this} focused={true}/>
                         </div>
-                        : <EventFrame key={index} index={index} event={event} session={session} eventList={this}/>
+                        : <div className="event-container" key={index}>
+                            {
+                                index > 0 ?
+                                <FlowConnector degree={event.degree}/>
+                                : null
+                            }
+                            <EventFrame index={index} event={event} session={session} eventList={this}/>
+                        </div>
                     )
                 })}
             </div>

@@ -236,7 +236,7 @@ footer a {
   height: 10px;
   margin: 0 2px;
   border-radius: 5px;
-  background-color: seagreen;
+  background-color: #646472;
 }
 
 .flow-session .event-frame .veto-control {
@@ -269,7 +269,7 @@ footer a {
   width: 5px;
   height: 20px;
   margin: 0 5px;
-  background-color: red;
+  background-color: #bb3b3b;
 }
 
 .flow-session .event-frame .main-info {

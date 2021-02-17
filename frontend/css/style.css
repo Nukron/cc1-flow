@@ -47,8 +47,8 @@ footer a {
 }
 
 .flow-session #missing-root {
-  background: -webkit-gradient(linear, left top, left bottom, from(#3885a3), to(rgba(255, 255, 255, 0)));
-  background: linear-gradient(180deg, #3885a3 0%, rgba(255, 255, 255, 0) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#1f262e), to(rgba(255, 255, 255, 0)));
+  background: linear-gradient(180deg, #1f262e 0%, rgba(255, 255, 255, 0) 100%);
   padding: 2rem;
 }
 
@@ -345,7 +345,7 @@ footer a {
 
 .flow-session .event-frame .main-info .event-content p {
   font-size: 1.4rem;
-  padding: 1rem;
+  padding: 1rem 2rem;
   max-width: 1000px;
 }
 
@@ -379,7 +379,7 @@ footer a {
       -ms-flex-direction: column;
           flex-direction: column;
   width: 100%;
-  max-width: 12rem;
+  max-width: 40rem;
   margin: 1rem;
   margin-bottom: 2rem;
   background-color: #646472;
@@ -390,7 +390,7 @@ footer a {
 }
 
 .flow-session .event-fragment p {
-  margin: 1rem;
+  padding: 1rem 2rem;
 }
 
 .flow-session .event-fragment .jump-to-event {

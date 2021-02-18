@@ -48,7 +48,7 @@ module.exports = class NewEventForm extends React.Component {
         const {degree} = this.state;
         const {selected, session} = this.props;
         const {root_event} = session.state.session;
-        console.log(session);
+        console.log(this.state);
         return (
             <div id="add-event" className="add-event-form">
                 {selected.map( (event_id, index) => {

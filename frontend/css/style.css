@@ -60,8 +60,8 @@ footer a {
 }
 
 .flow-session #missing-root {
-  background: -webkit-gradient(linear, left top, left bottom, from(#1f262e), to(rgba(255, 255, 255, 0)));
-  background: linear-gradient(180deg, #1f262e 0%, rgba(255, 255, 255, 0) 100%);
+  background: -webkit-gradient(linear, left top, left bottom, from(#24576a), to(rgba(28, 121, 228, 0)));
+  background: linear-gradient(180deg, #24576a 0%, rgba(28, 121, 228, 0) 100%);
   padding: 2rem;
 }
 

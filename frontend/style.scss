@@ -63,7 +63,7 @@ footer {
     }
 
     #missing-root {
-        background: linear-gradient(180deg, $color-flow-dark 0%, rgba(255, 255, 255, 0) 100%);
+        background: linear-gradient(180deg, darken($color-flow-main, 15) 0%, rgba(28, 121, 228, 0) 100%);
         padding: 2rem;
     }
 

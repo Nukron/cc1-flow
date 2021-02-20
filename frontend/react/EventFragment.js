@@ -8,7 +8,7 @@ module.exports = class EventFrame extends React.Component {
     }
 
     previewContent(){
-        const length = 200;
+        const length = 50;
         const {event} = this.props;
         const content = event.content;
         return content.length < length ? content : content.slice(0, length) + "...";

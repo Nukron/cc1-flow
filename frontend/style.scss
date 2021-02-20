@@ -47,8 +47,19 @@ footer {
     text-align: center;
 
     .cancel {
+        position: relative;
+        top: 0;
         width: 30px;
         height: 30px;
+        cursor: pointer;
+        transition: height 0.2s, width 0.2s, top 0.2s;
+
+        &:hover {
+            transition: height 0.2s, width 0.2s, top 0.2s;
+            width: 32px;
+            height: 32px;
+            top: -2px;
+        }
     }
 
     #missing-root {
@@ -77,12 +88,12 @@ footer {
         }
 
         .hide-related-events {
-            background: linear-gradient(0deg, $color-flow-main3 0%, rgba(255, 255, 255, 0) 80%);
+            background: linear-gradient(0deg, $color-flow-main2 0%, rgba(181, 116, 255, 0) 90%);
             position:relative;
             top: 20px;
-            width: 85%;
-            padding: 2rem;
-            color: $color-flow-main3;
+            width: 90%;
+            padding: 2rem 0;
+            color: white;
             text-transform: uppercase;
             font-size: 0.8rem;
         }
@@ -93,16 +104,24 @@ footer {
         flex-direction: row;
         justify-content: space-evenly;
         margin: 1rem;
-        width: 100px;
+        font-size: 1rem;
         border-radius: 20px;
         border: solid 1px white;
         padding: 0.5rem 0.8rem;
+        cursor: pointer;
+        transition: font-size 0.2s;
+
+        &:hover {
+            transition: font-size 0.2s;
+            font-size: 1.05rem;
+        }
 
         &.veto {
            
             svg {
                 width: 20px;
                 height: 20px;
+                margin-right: 10px;
                 fill: white;
             }
             
@@ -150,6 +169,7 @@ footer {
         padding: 0rem;
         margin-bottom: 0.5rem;
         background-color: gray;
+        color: $color-flow-dark;
         border-radius: 10px;
         box-shadow: rgb(190, 195, 201) 2px 2px 10px;
         transition: background-color 0.6s, color 0.6s, border 0.3s;
@@ -166,9 +186,24 @@ footer {
             transition: background-color 0.3s, color 0.3s;
         }
 
+
+        @keyframes focusing {
+            from {
+              background-color: gray;
+              color: $color-flow-dark;
+            }
+          
+            to {
+                background-color: $color-flow-main2;
+                color: white;
+            }
+        }
+
         &.focused {
-            border: solid 4px $color-flow-main;
-            transition: border 0.3s;
+            animation-duration: 1s;
+            animation-name: focusing;
+            background-color: $color-flow-main2;
+            color: white;
         }
 
         .related-events-control{

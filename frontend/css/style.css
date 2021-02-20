@@ -42,8 +42,21 @@ footer a {
 }
 
 .flow-session .cancel {
+  position: relative;
+  top: 0;
   width: 30px;
   height: 30px;
+  cursor: pointer;
+  -webkit-transition: height 0.2s, width 0.2s, top 0.2s;
+  transition: height 0.2s, width 0.2s, top 0.2s;
+}
+
+.flow-session .cancel:hover {
+  -webkit-transition: height 0.2s, width 0.2s, top 0.2s;
+  transition: height 0.2s, width 0.2s, top 0.2s;
+  width: 32px;
+  height: 32px;
+  top: -2px;
 }
 
 .flow-session #missing-root {
@@ -90,13 +103,13 @@ footer a {
 }
 
 .flow-session .event-list .hide-related-events {
-  background: -webkit-gradient(linear, left bottom, left top, from(#646472), color-stop(80%, rgba(255, 255, 255, 0)));
-  background: linear-gradient(0deg, #646472 0%, rgba(255, 255, 255, 0) 80%);
+  background: -webkit-gradient(linear, left bottom, left top, from(orangered), color-stop(90%, rgba(181, 116, 255, 0)));
+  background: linear-gradient(0deg, orangered 0%, rgba(181, 116, 255, 0) 90%);
   position: relative;
   top: 20px;
-  width: 85%;
-  padding: 2rem;
-  color: #646472;
+  width: 90%;
+  padding: 2rem 0;
+  color: white;
   text-transform: uppercase;
   font-size: 0.8rem;
 }
@@ -113,15 +126,25 @@ footer a {
       -ms-flex-pack: space-evenly;
           justify-content: space-evenly;
   margin: 1rem;
-  width: 100px;
+  font-size: 1rem;
   border-radius: 20px;
   border: solid 1px white;
   padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  -webkit-transition: font-size 0.2s;
+  transition: font-size 0.2s;
+}
+
+.flow-session .button:hover {
+  -webkit-transition: font-size 0.2s;
+  transition: font-size 0.2s;
+  font-size: 1.05rem;
 }
 
 .flow-session .button.veto svg {
   width: 20px;
   height: 20px;
+  margin-right: 10px;
   fill: white;
 }
 
@@ -176,6 +199,7 @@ footer a {
   padding: 0rem;
   margin-bottom: 0.5rem;
   background-color: gray;
+  color: #1f262e;
   border-radius: 10px;
   -webkit-box-shadow: #bec3c9 2px 2px 10px;
           box-shadow: #bec3c9 2px 2px 10px;
@@ -196,10 +220,35 @@ footer a {
   transition: background-color 0.3s, color 0.3s;
 }
 
+@-webkit-keyframes focusing {
+  from {
+    background-color: gray;
+    color: #1f262e;
+  }
+  to {
+    background-color: orangered;
+    color: white;
+  }
+}
+
+@keyframes focusing {
+  from {
+    background-color: gray;
+    color: #1f262e;
+  }
+  to {
+    background-color: orangered;
+    color: white;
+  }
+}
+
 .flow-session .event-frame.focused {
-  border: solid 4px #3885a3;
-  -webkit-transition: border 0.3s;
-  transition: border 0.3s;
+  -webkit-animation-duration: 1s;
+          animation-duration: 1s;
+  -webkit-animation-name: focusing;
+          animation-name: focusing;
+  background-color: orangered;
+  color: white;
 }
 
 .flow-session .event-frame .related-events-control {

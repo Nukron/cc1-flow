@@ -4,6 +4,7 @@
 
 Flow is an RPG System implemented as Webapp, that tries to rethink the roleplaying formula with a webapp.
 For more informations refer to the [concept](https://github.com/seb-ctech/cc1-flow/wiki/concept)
+This link brings you to the [App](https://flow-rpg.herokuapp.com/)
 
 Even though the System is implemented as a publically available Webapp, the System as a result of it's ruleset is the product of a long creative process and therefor intellectual property (c) 2021.
 
